@@ -84,6 +84,7 @@ ref_s3:'Earn $2 for every friend who joins Premium',
 ref_your_link:'Your referral link', ref_copy:'Copy', 
 ref_note:'💡 Sign up or log in to activate your personal link',
 ref_referred:'referred', ref_earned:'earned',
+     social_label:'Follow us on social media',
   },
 
   es: {
@@ -162,6 +163,7 @@ ref_s3:'Ganá $2 por cada amigo que se una al Premium',
 ref_your_link:'Tu link de referido', ref_copy:'Copiar',
 ref_note:'💡 Registrate o ingresá para activar tu link personal',
 ref_referred:'referidos', ref_earned:'ganado',
+     social_label:'Seguinos en nuestras redes sociales',
   },
 
   pt: {
@@ -240,6 +242,7 @@ ref_s3:'Ganhe $2 por cada amigo que entrar no Premium',
 ref_your_link:'Seu link de indicação', ref_copy:'Copiar',
 ref_note:'💡 Cadastre-se ou entre para ativar seu link pessoal',
 ref_referred:'indicados', ref_earned:'ganho',
+     social_label:'Siga-nos nas redes sociais',
   },
 
   fr: {
@@ -318,6 +321,7 @@ ref_s3:'Gagnez 2$ pour chaque ami qui rejoint le Premium',
 ref_your_link:'Votre lien de parrainage', ref_copy:'Copier',
 ref_note:'💡 Inscrivez-vous ou connectez-vous pour activer votre lien personnel',
 ref_referred:'parrainés', ref_earned:'gagné',
+     social_label:'Suivez-nous sur les réseaux sociaux',
 
   },
 
@@ -397,6 +401,7 @@ ref_s3:'Guadagna $2 per ogni amico che entra nel Premium',
 ref_your_link:'Il tuo link referral', ref_copy:'Copia',
 ref_note:'💡 Registrati o accedi per attivare il tuo link personale',
 ref_referred:'referrati', ref_earned:'guadagnato',
+     social_label:'Seguici sui social media',
   },
 
   ph: {
@@ -475,6 +480,7 @@ ref_s3:'Kumita ng $2 para sa bawat kaibigan na sumasali sa Premium',
 ref_your_link:'Ang iyong referral link', ref_copy:'Kopyahin',
 ref_note:'💡 Mag-sign up o mag-login para ma-activate ang iyong personal na link',
 ref_referred:'na-refer', ref_earned:'kinita',
+     social_label:'Sundan kami sa social media',
   },
 };
 
