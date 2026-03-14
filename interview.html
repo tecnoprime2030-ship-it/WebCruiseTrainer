@@ -143,9 +143,17 @@
     <div class="q-text" id="qText">Loading question...</div>
 
     <!-- Listen button -->
-    <button class="listen-btn" onclick="speakQuestion()" id="listenBtn">
-      🔊 Listen to question
-    </button>
+    <div class="listen-group">
+      <button class="listen-btn" onclick="speakText('question')" id="listenBtn">
+        🔊 Question
+      </button>
+      <button class="listen-btn listen-btn-answer" onclick="speakText('answer')" id="listenAnswerBtn">
+        🔊 Model Answer
+      </button>
+      <button class="listen-btn listen-btn-followup" onclick="speakText('followup')" id="listenFollowBtn">
+        🔊 Follow-up
+      </button>
+    </div>
   </div>
 
   <!-- PRACTICE MODE UI -->
