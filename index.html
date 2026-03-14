@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CruiseInterviewAcademy – Train for Cruise Ship Jobs</title>
+<meta name="description" content="Prepare for cruise ship job interviews, improve your English and master onboard communication. Real interview questions, voice simulation and certificates.">
+<meta name="keywords" content="cruise ship interview, cruise job English, cruise interview training, cruise academy, work on cruise ship, entrevista crucero ingles">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== ANNOUNCEMENT BAR ===== -->
+<div class="announce-bar" id="announceBar">
+  <span class="announce-text" id="announceText">🔥 <strong>Limited Free Access:</strong> <span id="freeCounter">47</span> free spots remaining today — <a href="#pricing" class="announce-link">Claim yours now</a></span>
+  <button class="announce-close" onclick="document.getElementById('announceBar').style.display='none'">✕</button>
+</div>
+
+<!-- ===== TOPBAR ===== -->
+<header class="topbar" id="topbar">
+  <div class="logo">
+    <img src="images/logo.png" alt="CruiseInterviewAcademy Logo" onerror="this.style.display='none'; document.querySelector('.logo-text').style.display='block'">
+    <span class="logo-text" style="display:none">CIA</span>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="menu" id="mainMenu">
+    <a href="index.html" data-i18n="nav_home">Home</a>
+    <a href="interview.html" data-i18n="nav_interview">Interview</a>
+    <a href="vocabulary.html" data-i18n="nav_vocab">Vocabulary</a>
+    <a href="english.html" data-i18n="nav_english">English</a>
+    <a href="entertainment.html" data-i18n="nav_entertain">Entertainment</a>
+    <a href="jobs.html" data-i18n="nav_jobs">Jobs</a>
+  </nav>
+
+  <div class="topbar-right">
+    <select id="langSelector" class="lang-selector" aria-label="Select language">
+      <option value="en">🇬🇧 EN</option>
+      <option value="es">🇪🇸 ES</option>
+      <option value="pt">🇵🇹 PT</option>
+      <option value="fr">🇫🇷 FR</option>
+      <option value="it">🇮🇹 IT</option>
+      <option value="ph">🇵🇭 PH</option>
+    </select>
+    <button class="btn-topbar-ghost" id="loginBtn" onclick="openLogin()">Login</button>
+    <a href="#pricing" class="btn-topbar-cta" data-i18n="nav_start">Start Free</a>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge" data-i18n="hero_badge">🚢 #1 Cruise Interview Training Platform</div>
+    <h1 class="hero-title" data-i18n="hero_title">
+      Your Dream Job<br><em>Starts Here.</em>
+    </h1>
+    <p class="hero-sub" data-i18n="hero_sub">
+      Real interview questions. Voice simulation. English training.<br>
+      Get hired on a cruise ship — wherever you are in the world.
+    </p>
+    <div class="hero-cta-group">
+      <a href="interview.html" class="btn-hero-primary" data-i18n="hero_cta1">
+        <span class="btn-icon">🎤</span> Start Interview Practice
+      </a>
+      <a href="english.html" class="btn-hero-secondary" data-i18n="hero_cta2">
+        Train English Free
+      </a>
+    </div>
+    <div class="hero-social-proof">
+      <div class="proof-avatars">
+        <div class="avatar" style="background:#0ea5e9">A</div>
+        <div class="avatar" style="background:#8b5cf6">M</div>
+        <div class="avatar" style="background:#10b981">J</div>
+        <div class="avatar" style="background:#f59e0b">L</div>
+      </div>
+      <span class="proof-text" data-i18n="hero_proof">Join 200+ candidates already training</span>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span></span>
+  </div>
+</section>
+
+<!-- ===== MISSION STRIP ===== -->
+<section class="mission-strip">
+  <div class="mission-inner">
+    <p data-i18n="mission_text">
+      Our mission is to democratize access to cruise ship jobs — giving anyone, anywhere, the tools to prepare, speak confidently and get hired.
+    </p>
+  </div>
+</section>
+
+<!-- ===== DEPARTMENTS ===== -->
+<section class="departments" id="departments">
+  <div class="section-header">
+    <span class="section-label" data-i18n="dept_label">TRAIN BY DEPARTMENT</span>
+    <h2 data-i18n="dept_title">Which role are you preparing for?</h2>
+    <p data-i18n="dept_sub">Specialized training for every cruise ship department. Real scenarios, real phrases, real interviews.</p>
+  </div>
+
+  <div class="dept-grid">
+    <div class="dept-card dept-entertainment" data-href="entertainment.html">
+      <div class="dept-icon">🎤</div>
+      <h3 data-i18n="dept_ent_title">Entertainment Host</h3>
+      <p data-i18n="dept_ent_desc">Trivia, bingo, karaoke, stage hosting and crowd engagement scripts.</p>
+      <span class="dept-tag" data-i18n="dept_questions">48 questions</span>
+    </div>
+    <div class="dept-card dept-food" data-href="interview.html">
+      <div class="dept-icon">🍽</div>
+      <h3 data-i18n="dept_fb_title">Food & Beverage</h3>
+      <p data-i18n="dept_fb_desc">Waiter, bartender and buffet staff service training and guest interaction.</p>
+      <span class="dept-tag">36 questions</span>
+    </div>
+    <div class="dept-card dept-housekeeping" data-href="interview.html">
+      <div class="dept-icon">🧹</div>
+      <h3 data-i18n="dept_hk_title">Housekeeping</h3>
+      <p data-i18n="dept_hk_desc">Cabin service communication and guest interaction phrases.</p>
+      <span class="dept-tag">24 questions</span>
+    </div>
+    <div class="dept-card dept-guest" data-href="interview.html">
+      <div class="dept-icon">🛎</div>
+      <h3 data-i18n="dept_gs_title">Guest Services</h3>
+      <p data-i18n="dept_gs_desc">Handle requests, complaints and onboard situations like a pro.</p>
+      <span class="dept-tag">12 questions</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-it-works" id="how">
+  <div class="section-header">
+    <span class="section-label">HOW IT WORKS</span>
+    <h2 data-i18n="how_title">From zero to hired in 4 steps</h2>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-number">01</div>
+      <div class="step-icon">📚</div>
+      <h3 data-i18n="step1_title">Study real questions</h3>
+      <p data-i18n="step1_desc">120 real cruise recruiter questions with model answers and follow-ups.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">02</div>
+      <div class="step-icon">🎧</div>
+      <h3 data-i18n="step2_title">Train your English</h3>
+      <p data-i18n="step2_desc">Vocabulary by department, pronunciation practice and audio phrases.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">03</div>
+      <div class="step-icon">🎤</div>
+      <h3 data-i18n="step3_title">Simulate the interview</h3>
+      <p data-i18n="step3_desc">Speak your answer. Get instant feedback on pronunciation and accuracy.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">04</div>
+      <div class="step-icon">🏆</div>
+      <h3 data-i18n="step4_title">Earn your certificate</h3>
+      <p data-i18n="step4_desc">Download your completion certificate and show it to recruiters.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURE HIGHLIGHT ===== -->
+<section class="feature-highlight">
+  <div class="feature-inner">
+    <div class="feature-text">
+      <span class="section-label">VOICE SIMULATION</span>
+      <h2 data-i18n="feat_title">Speak. Get scored. Improve.</h2>
+      <p data-i18n="feat_desc">Our voice interview simulator listens to your answer, compares it word-by-word against the model answer and gives you instant color-coded feedback. Red = needs work. Yellow = close. Green = perfect.</p>
+      <div class="feature-bullets">
+        <div class="feat-bullet"><span class="bullet-dot green"></span><span data-i18n="feat_b1">Works in Google Chrome on any device</span></div>
+        <div class="feat-bullet"><span class="bullet-dot yellow"></span><span data-i18n="feat_b2">Adjustable voice speed and accent</span></div>
+        <div class="feat-bullet"><span class="bullet-dot red"></span><span data-i18n="feat_b3">Instant score and improvement tips</span></div>
+      </div>
+      <a href="interview.html" class="btn-feature" data-i18n="feat_cta">Try Interview Simulator →</a>
+    </div>
+    <div class="feature-demo">
+      <div class="demo-card">
+        <div class="demo-q">Tell me about yourself.</div>
+        <div class="demo-answer">
+          <span class="word-green">I</span>
+          <span class="word-green">am</span>
+          <span class="word-green">a</span>
+          <span class="word-yellow">hospitality</span>
+          <span class="word-red">profesional</span>
+          <span class="word-green">with</span>
+          <span class="word-green">three</span>
+          <span class="word-yellow">years</span>
+          <span class="word-green">of</span>
+          <span class="word-green">experience.</span>
+        </div>
+        <div class="demo-score">
+          <div class="score-bar-wrap">
+            <div class="score-bar" style="width:78%"></div>
+          </div>
+          <span class="score-num">78% accuracy</span>
+        </div>
+        <div class="demo-tip">💡 Tip: "profesional" → "professional" (double 's')</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testimonials" id="testimonials">
+  <div class="section-header">
+    <span class="section-label" data-i18n="test_label">SUCCESS STORIES</span>
+    <h2 data-i18n="test_title">They trained here. They got hired.</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p data-i18n="testi1_text">"I had no idea what cruise recruiters actually ask. After two weeks here, I walked into my interview feeling confident and got the job."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#0ea5e9">A</div>
+        <div>
+          <strong>Andrea R.</strong>
+          <span>Buenos Aires 🇦🇷 — Entertainment Host, MSC Cruises</span>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p data-i18n="testi2_text">"The voice simulator is incredible. I practiced every night for a week and my English fluency improved so much the recruiter complimented me."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#10b981">M</div>
+        <div>
+          <strong>Marcos L.</strong>
+          <span>São Paulo 🇧🇷 — Waiter, Costa Cruises</span>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p data-i18n="testi3_text">"I was scared of speaking English in an interview. This platform gave me the exact phrases I needed. Now I'm onboard living my dream."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#8b5cf6">J</div>
+        <div>
+          <strong>Johanna V.</strong>
+          <span>Manila 🇵🇭 — Guest Services, Royal Caribbean</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="pricing" id="pricing">
+  <div class="section-header">
+    <span class="section-label">PRICING</span>
+    <h2 data-i18n="price_title">Invest in yourself. Change your life.</h2>
+    <p data-i18n="price_sub">One payment. Lifetime access. No hidden fees.</p>
+  </div>
+
+  <div class="price-grid">
+    <!-- FREE -->
+    <div class="price-card price-free">
+      <div class="price-card-header">
+        <h3 data-i18n="free_title">Free Starter</h3>
+        <div class="price-amount">$0</div>
+        <p data-i18n="free_sub">Get a taste — no credit card needed</p>
+      </div>
+      <ul class="price-features">
+        <li class="feat-yes">20 interview questions</li>
+        <li class="feat-yes">Basic vocabulary cards</li>
+        <li class="feat-yes">1 department module</li>
+        <li class="feat-no">Voice interview simulator</li>
+        <li class="feat-no">120 full Q&A with model answers</li>
+        <li class="feat-no">Audio pronunciation training</li>
+        <li class="feat-no">Entertainment hosting scripts</li>
+        <li class="feat-no">Completion certificate</li>
+        <li class="feat-no">Downloadable ebook</li>
+      </ul>
+      <a href="interview.html" class="btn-free" data-i18n="free_cta">Start for Free</a>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="price-card price-premium">
+      <div class="price-popular-badge">MOST POPULAR</div>
+      <div class="price-card-header">
+        <h3 data-i18n="prem_title">Full Training</h3>
+        <div class="price-amount">$19 <span class="price-old">$49</span></div>
+        <p data-i18n="prem_sub">Everything you need to get hired</p>
+        <div class="price-timer-wrap">
+          <span data-i18n="timer_label">⏳ Price increases in:</span>
+          <span class="countdown" id="countdown">23:47:12</span>
+        </div>
+      </div>
+      <ul class="price-features">
+        <li class="feat-yes">✓ 120 real cruise interview Q&A</li>
+        <li class="feat-yes">✓ Follow-up recruiter questions</li>
+        <li class="feat-yes">✓ Voice interview simulator</li>
+        <li class="feat-yes">✓ English audio training</li>
+        <li class="feat-yes">✓ Vocabulary by department</li>
+        <li class="feat-yes">✓ Entertainment hosting scripts</li>
+        <li class="feat-yes">✓ Guest service scenarios</li>
+        <li class="feat-yes">✓ Completion certificate (PDF)</li>
+        <li class="feat-yes">✓ Downloadable phrase ebook</li>
+        <li class="feat-yes">✓ Lifetime access & updates</li>
+      </ul>
+      <button class="btn-premium" onclick="openCart()" data-i18n="prem_cta">
+        Unlock Full Training — $19
+      </button>
+      <p class="price-guarantee">🔒 30-day money-back guarantee</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA STRIP ===== -->
+<section class="cta-strip">
+  <div class="cta-inner">
+    <h2 data-i18n="cta_title">Don't stay on shore.<br>Your ship is waiting.</h2>
+    <p data-i18n="cta_sub">Every day you wait is a day someone else takes your spot onboard.</p>
+    <a href="#pricing" class="btn-cta-big" data-i18n="cta_btn">Start Training Now — It's Free</a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo">CruiseInterviewAcademy</span>
+      <p data-i18n="footer_tagline">Your journey starts here.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Training</h4>
+      <a href="interview.html">Interview Practice</a>
+      <a href="vocabulary.html">Vocabulary</a>
+      <a href="english.html">English Training</a>
+      <a href="entertainment.html">Entertainment</a>
+    </div>
+    <div class="footer-links">
+      <h4>Resources</h4>
+      <a href="#">Cruise Job Guide</a>
+      <a href="#">500 Cruise Phrases</a>
+      <a href="#">Interview Ebook</a>
+      <a href="#">Certificates</a>
+    </div>
+    <div class="footer-links">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 CruiseInterviewAcademy. All rights reserved.</p>
+    <div class="social-links">
+      <a href="#" aria-label="Instagram">Instagram</a>
+      <a href="#" aria-label="YouTube">YouTube</a>
+    </div>
+    <p class="footer-security">🔒 Secure checkout · SSL encrypted · Your data is protected</p>
+  </div>
+</footer>
+
+<!-- ===== LOGIN MODAL ===== -->
+<div class="modal-overlay" id="loginModal" style="display:none" onclick="if(event.target===this)closeLogin()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeLogin()">✕</button>
+    <h2>Welcome back</h2>
+    <p style="color:var(--c-text-muted); margin-bottom:1.5rem">Log in to continue your training</p>
+    <input type="email" placeholder="Email" id="loginEmail" style="width:100%; margin-bottom:12px">
+    <input type="password" placeholder="Password" id="loginPass" style="width:100%; margin-bottom:1.5rem">
+    <button class="btn-premium" style="width:100%" onclick="handleLogin()">Log In</button>
+    <p style="text-align:center; margin-top:1rem; font-size:14px">
+      No account? <a href="#pricing" onclick="closeLogin()" style="color:var(--c-accent)">Start for free</a>
+    </p>
+  </div>
+</div>
+
+<!-- ===== CART MODAL ===== -->
+<div class="modal-overlay" id="cartModal" style="display:none" onclick="if(event.target===this)closeCart()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCart()">✕</button>
+    <h2>Complete your order</h2>
+    <div class="cart-item">
+      <span>CruiseInterviewAcademy — Full Training</span>
+      <strong>$19</strong>
+    </div>
+    <div class="cart-divider"></div>
+    <p style="font-size:13px; color:var(--c-text-muted); margin-bottom:1.5rem">Payment processing coming soon. Enter your email to be notified at launch and get early access.</p>
+    <input type="email" placeholder="Your email" id="cartEmail" style="width:100%; margin-bottom:12px">
+    <button class="btn-premium" style="width:100%" onclick="handleCartSubmit()">Reserve My Spot</button>
+    <p style="text-align:center; font-size:12px; margin-top:1rem; color:var(--c-text-muted)">🔒 SSL encrypted · 30-day refund guarantee</p>
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="js/main.js"></script>
+</body>
+</html>
