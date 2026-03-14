@@ -1,300 +1,596 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interview Practice – CruiseInterviewAcademy</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="interview.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
+/* ==============================================
+   CruiseInterviewAcademy — interview.js
+   Voice recognition, scoring, practice mode,
+   simulation mode, PDF generation (jsPDF)
+   ============================================== */
 
-<!-- TOPBAR -->
-<header class="topbar" id="topbar">
-  <div class="logo">
-    <img src="images/logo.png" alt="CruiseInterviewAcademy" onerror="this.style.display='none'">
-    <span class="logo-name">CruiseInterviewAcademy</span>
-  </div>
-  <nav class="menu" id="mainMenu">
-    <a href="index.html">Home</a>
-    <a href="interview.html" class="active">Interview</a>
-    <a href="#">English Training</a>
-    <a href="#">Vocabulary</a>
-    <a href="#">Entertainment</a>
-    <a href="#">Jobs</a>
-  </nav>
-  <div class="auth-area">
-    <div class="auth-buttons">
-      <button class="btn-login" id="loginBtn">Login</button>
-      <button class="btn-cart">🛒 Cart</button>
-    </div>
-    <select id="language-selector" class="lang-select">
-      <option value="en">🇬🇧 EN</option>
-      <option value="es">🇪🇸 ES</option>
-      <option value="it">🇮🇹 IT</option>
-      <option value="fr">🇫🇷 FR</option>
-      <option value="pt">🇵🇹 PT</option>
-      <option value="ph">🇵🇭 PH</option>
-    </select>
-  </div>
-</header>
+// ================================================================
+// STATE
+// ================================================================
+let currentMode    = 'practice';
+let currentDept    = 'all';
+let currentIndex   = 0;
+let filteredQs     = [];
+let isListening    = false;
+let recognition    = null;
+let simTimer       = null;
+let simTimeLeft    = 60;
+let userTranscript = '';
+let sessionScores  = JSON.parse(localStorage.getItem('cia_scores') || '{}');
+let isPremium      = JSON.parse(localStorage.getItem('cia_premium') || 'false');
+const FREE_LIMIT   = 4;
 
-<!-- PAGE HEADER -->
-<div class="page-header">
-  <div class="page-header-inner">
-    <div class="section-label">INTERVIEW SIMULATOR</div>
-    <h1>Cruise Ship Interview Practice</h1>
-    <p>120 real questions. Voice simulation. Instant feedback. Two modes to train like a pro.</p>
-    <div class="chrome-notice">
-      🎤 Voice features work best in <strong>Google Chrome</strong> on desktop
-    </div>
-  </div>
-</div>
+const ENCOURAGEMENTS = [
+  "Great effort! Keep practicing! 💪",
+  "You're improving with every attempt! 🚀",
+  "That's the spirit! Cruise recruiters will love your confidence! ⚓",
+  "Excellent! One step closer to boarding! 🚢",
+  "Keep going! Your dream job is within reach! 🌊",
+  "That's a strong answer! Polish those keywords! 🔑",
+  "Impressive! Your English is sounding more natural! 🎤",
+  "You've got this! Recruiters are looking for exactly this energy! ✨"
+];
 
-<!-- MAIN LAYOUT -->
-<div class="interview-layout">
+// ================================================================
+// INIT
+// ================================================================
+document.addEventListener('DOMContentLoaded', function () {
+  buildFilteredList();
+  loadQuestion(0);
+  loadVoices();
+  updateProgressStats();
+  setupRateSlider();
+  if (typeof speechSynthesis !== 'undefined') {
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+});
 
-<!-- LEFT PANEL: controls -->
-<aside class="interview-sidebar">
+// ================================================================
+// QUESTION MANAGEMENT
+// ================================================================
+function buildFilteredList() {
+  filteredQs = currentDept === 'all' ? [...QUESTIONS] : QUESTIONS.filter(q => q.dept === currentDept);
+  document.getElementById('qTotal').textContent = filteredQs.length;
+}
 
-  <!-- Mode selector -->
-  <div class="mode-selector">
-    <button class="mode-btn active" id="modePracticeBtn" onclick="setMode('practice')">
-      <span class="mode-icon">🎓</span>
-      <span class="mode-label">Practice Mode</span>
-      <span class="mode-sub">Repeat until perfect</span>
-    </button>
-    <button class="mode-btn" id="modeSimBtn" onclick="setMode('simulation')">
-      <span class="mode-icon">⏱</span>
-      <span class="mode-label">Simulation Mode</span>
-      <span class="mode-sub">Real interview pressure</span>
-    </button>
-  </div>
+function filterDept(dept) {
+  currentDept  = dept;
+  currentIndex = 0;
+  buildFilteredList();
+  loadQuestion(0);
+  document.querySelectorAll('.dept-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
 
-  <!-- Department filter -->
-  <div class="filter-box">
-    <div class="filter-label">Department</div>
-    <div class="dept-filters">
-      <button class="dept-btn active" onclick="filterDept('all')">All</button>
-      <button class="dept-btn" onclick="filterDept('general')">General</button>
-      <button class="dept-btn" onclick="filterDept('entertainment')">Entertainment</button>
-      <button class="dept-btn" onclick="filterDept('food')">Food & Bev</button>
-      <button class="dept-btn" onclick="filterDept('housekeeping')">Housekeeping</button>
-      <button class="dept-btn" onclick="filterDept('guestservices')">Guest Services</button>
-    </div>
-  </div>
+function loadQuestion(idx) {
+  if (!filteredQs.length) return;
+  currentIndex = Math.max(0, Math.min(idx, filteredQs.length - 1));
+  const q = filteredQs[currentIndex];
 
-  <!-- Voice settings -->
-  <div class="voice-box">
-    <div class="filter-label">🔊 Voice Settings</div>
-    <label class="voice-label">Reading voice</label>
-    <select id="voiceSelect" class="voice-select"></select>
-    <label class="voice-label">Speed — <span id="rateVal">1.0</span>x</label>
-    <input type="range" id="rateSlider" min="0.5" max="1.5" step="0.1" value="1.0">
-  </div>
+  document.getElementById('qCurrent').textContent   = currentIndex + 1;
+  document.getElementById('qNumber').textContent    = String(q.id).padStart(2, '0');
+  document.getElementById('qText').textContent      = q.question;
+  document.getElementById('qDeptBadge').textContent = q.deptLabel;
 
-  <!-- Progress -->
-  <div class="sidebar-progress">
-    <div class="filter-label">Your Progress</div>
-    <div class="prog-row">
-      <span>Questions answered</span>
-      <strong id="answeredCount">0</strong>
-    </div>
-    <div class="prog-row">
-      <span>Average score</span>
-      <strong id="avgScore">—</strong>
-    </div>
-    <div class="prog-row">
-      <span>Best score</span>
-      <strong id="bestScore">—</strong>
-    </div>
-    <div class="progress-bar" style="margin-top:10px">
-      <div class="progress-fill" id="overallProgressFill" style="width:0%"></div>
-    </div>
-  </div>
+  resetAnswerUI();
 
-  <!-- PDF Download -->
-  <button class="pdf-btn" onclick="handlePdfDownload()">
-    📄 Download Full Q&A PDF
-    <span class="pdf-badge">Premium</span>
-  </button>
+  const isLocked = !isPremium && q.id > FREE_LIMIT;
+  renderModelAnswer(q, isLocked);
+  clearSimTimer();
+  if (currentMode === 'simulation') startSimTimer();
+}
 
-</aside>
+function nextQuestion() {
+  if (currentIndex < filteredQs.length - 1) {
+    loadQuestion(currentIndex + 1);
+  } else {
+    showEncouragement("🏆 You've completed all questions in this set! Amazing work!");
+  }
+}
 
-<!-- RIGHT PANEL: question + answer area -->
-<main class="interview-main">
+function prevQuestion() {
+  loadQuestion(currentIndex - 1);
+}
 
-  <!-- Question counter & nav -->
-  <div class="q-topbar">
-    <div class="q-counter">
-      Question <span id="qCurrent">1</span> of <span id="qTotal">120</span>
-    </div>
-    <div class="q-dept-badge" id="qDeptBadge">General</div>
-    <div class="q-nav">
-      <button class="q-nav-btn" onclick="prevQuestion()">← Prev</button>
-      <button class="q-nav-btn" onclick="nextQuestion()">Next →</button>
-    </div>
-  </div>
+function resetAnswerUI() {
+  userTranscript = '';
+  isListening    = false;
+  const micBtn   = document.getElementById('micBtn');
+  if (micBtn) {
+    micBtn.classList.remove('listening');
+    document.getElementById('micLabel').textContent = 'Tap to speak';
+  }
+  document.getElementById('transcriptBox').style.display   = 'none';
+  document.getElementById('transcriptText').textContent    = '';
+  document.getElementById('scoreWrap').style.display       = 'none';
+  document.getElementById('comparisonWrap').style.display  = 'none';
+  document.getElementById('retryBtn').style.display        = 'none';
+  document.getElementById('happyBtn').style.display        = 'none';
+  document.getElementById('answerStatus').textContent      = 'Press the microphone and speak your answer in English';
+  document.getElementById('modelAnswerContent').style.display = 'none';
+  const toggleBtn = document.getElementById('toggleAnswerBtn');
+  if (toggleBtn) toggleBtn.textContent = '👁 Show Model Answer';
+  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
+  const enc = document.querySelector('.encouragement');
+  if (enc) enc.remove();
+}
 
-  <!-- Question card -->
-  <div class="question-card" id="questionCard">
-    <div class="q-number" id="qNumber">01</div>
-    <div class="q-text" id="qText">Loading question...</div>
+// ================================================================
+// RENDER MODEL ANSWER
+// ================================================================
+function renderModelAnswer(q, isLocked) {
+  document.getElementById('modelAnswerBox').textContent = q.modelAnswer;
+  document.getElementById('tipText').textContent        = q.tip;
+  document.getElementById('fuQuestion').textContent     = q.followUp;
+  document.getElementById('fuAnswer').textContent       = q.followUpAnswer;
+  document.getElementById('fuAnswer').style.display     = 'none';
+  document.querySelector('.fu-toggle').textContent      = 'Show follow-up answer';
 
-    <!-- Listen button -->
-    <div class="listen-group">
-      <button class="listen-btn" onclick="speakText('question')" id="listenBtn">
-        🔊 Question
-      </button>
-      <button class="listen-btn listen-btn-answer" onclick="speakText('answer')" id="listenAnswerBtn">
-        🔊 Model Answer
-      </button>
-      <button class="listen-btn listen-btn-followup" onclick="speakText('followup')" id="listenFollowBtn">
-        🔊 Follow-up
-      </button>
-    </div>
-  </div>
+  const chips = document.getElementById('kwChips');
+  chips.innerHTML = '';
+  q.keywords.forEach(kw => {
+    const chip       = document.createElement('span');
+    chip.className   = 'kw-chip';
+    chip.textContent = kw;
+    chips.appendChild(chip);
+  });
 
-  <!-- PRACTICE MODE UI -->
-  <div id="practiceUI">
+  document.getElementById('lockOverlay').style.display = isLocked ? 'flex' : 'none';
+}
 
-    <!-- Timer bar (simulation only, hidden in practice) -->
-    <div class="timer-wrap" id="timerWrap" style="display:none">
-      <div class="timer-bar-bg">
-        <div class="timer-bar-fill" id="timerFill"></div>
-      </div>
-      <span class="timer-text" id="timerText">60s</span>
-    </div>
+function toggleModelAnswer() {
+  const content  = document.getElementById('modelAnswerContent');
+  const btn      = document.getElementById('toggleAnswerBtn');
+  const q        = filteredQs[currentIndex];
+  const isLocked = !isPremium && q.id > FREE_LIMIT;
+  if (isLocked) { openPremiumModal(); return; }
+  const showing = content.style.display !== 'none';
+  content.style.display = showing ? 'none' : 'block';
+  btn.textContent = showing ? '👁 Show Model Answer' : '👁 Hide Model Answer';
+}
 
-    <!-- Voice answer area -->
-    <div class="answer-area">
-      <div class="answer-status" id="answerStatus">
-        Press the microphone and speak your answer in English
-      </div>
+function toggleFollowUp() {
+  const ans = document.getElementById('fuAnswer');
+  const btn = document.querySelector('.fu-toggle');
+  const showing = ans.style.display !== 'none';
+  ans.style.display = showing ? 'none' : 'block';
+  btn.textContent   = showing ? 'Show follow-up answer' : 'Hide follow-up answer';
+}
 
-      <div class="mic-wrap">
-        <button class="mic-btn" id="micBtn" onclick="toggleMic()">
-          <span class="mic-icon">🎤</span>
-          <span class="mic-label" id="micLabel">Tap to speak</span>
-        </button>
-      </div>
+// ================================================================
+// MODE
+// ================================================================
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('modePracticeBtn').classList.toggle('active', mode === 'practice');
+  document.getElementById('modeSimBtn').classList.toggle('active', mode === 'simulation');
+  document.getElementById('timerWrap').style.display = mode === 'simulation' ? 'flex' : 'none';
+  clearSimTimer();
+  resetAnswerUI();
+  if (mode === 'simulation') startSimTimer();
+}
 
-      <!-- Live transcript -->
-      <div class="transcript-box" id="transcriptBox" style="display:none">
-        <div class="transcript-label">Your answer:</div>
-        <div class="transcript-text" id="transcriptText"></div>
-      </div>
+// ================================================================
+// SIMULATION TIMER
+// ================================================================
+function startSimTimer() {
+  simTimeLeft = 60;
+  updateTimerUI(60);
+  clearSimTimer();
+  simTimer = setInterval(() => {
+    simTimeLeft--;
+    updateTimerUI(simTimeLeft);
+    if (simTimeLeft <= 0) {
+      clearSimTimer();
+      if (isListening) stopListening();
+      document.getElementById('answerStatus').textContent = "⏰ Time's up! See your score below.";
+    }
+  }, 1000);
+}
 
-      <!-- Score display -->
-      <div class="score-wrap" id="scoreWrap" style="display:none">
-        <div class="score-circle" id="scoreCircle">
-          <span class="score-num" id="scoreNum">0%</span>
-          <span class="score-label">accuracy</span>
-        </div>
-        <div class="score-breakdown" id="scoreBreakdown"></div>
-      </div>
+function clearSimTimer() {
+  if (simTimer) { clearInterval(simTimer); simTimer = null; }
+}
 
-      <!-- Color coded answer comparison -->
-      <div class="comparison-wrap" id="comparisonWrap" style="display:none">
-        <div class="comparison-label">Word-by-word comparison:</div>
-        <div class="comparison-text" id="comparisonText"></div>
-        <div class="legend">
-          <span class="legend-item"><span class="dot green"></span> Correct</span>
-          <span class="legend-item"><span class="dot yellow"></span> Close</span>
-          <span class="legend-item"><span class="dot red"></span> Missing/Wrong</span>
-        </div>
-      </div>
+function updateTimerUI(t) {
+  const fill = document.getElementById('timerFill');
+  const text = document.getElementById('timerText');
+  if (!fill || !text) return;
+  fill.style.width = (t / 60 * 100) + '%';
+  text.textContent = t + 's';
+  fill.classList.toggle('urgent', t <= 15);
+}
 
-    </div>
+// ================================================================
+// MICROPHONE / SPEECH RECOGNITION
+// ================================================================
+function toggleMic() {
+  if (isListening) stopListening();
+  else startListening();
+}
 
-    <!-- Model answer section (locked for non-premium after q4) -->
-    <div class="model-answer-section" id="modelAnswerSection">
-      <button class="toggle-answer-btn" id="toggleAnswerBtn" onclick="toggleModelAnswer()">
-        👁 Show Model Answer
-      </button>
+function startListening() {
+  // Stop any ongoing speech first — prevents mic capturing TTS output
+  if (window.speechSynthesis) speechSynthesis.cancel();
 
-      <div class="model-answer-content" id="modelAnswerContent" style="display:none">
+  if (/Mobi|Android/i.test(navigator.userAgent)) {
+    document.getElementById('answerStatus').textContent =
+      '📱 For best results use Google Chrome on desktop. Mobile voice recognition is limited.';
+  }
 
-        <div class="model-answer-box" id="modelAnswerBox">
-          <!-- filled by JS -->
-        </div>
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Speech recognition is not supported in this browser. Please use Google Chrome on desktop.');
+    return;
+  }
 
-        <div class="keywords-box">
-          <div class="kw-label">🔑 Key words to use:</div>
-          <div class="kw-chips" id="kwChips"></div>
-        </div>
+  recognition                = new SpeechRecognition();
+  recognition.continuous     = false;   // FIX: single pass — no loop
+  recognition.interimResults = false;   // FIX: no interim — cleaner result
+  recognition.lang           = 'en-US';
 
-        <div class="followup-box" id="followupBox">
-          <div class="fu-label">🔄 Likely follow-up question:</div>
-          <div class="fu-question" id="fuQuestion"></div>
-          <div class="fu-answer" id="fuAnswer" style="display:none"></div>
-          <button class="fu-toggle" onclick="toggleFollowUp()">Show follow-up answer</button>
-        </div>
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    document.getElementById('micLabel').textContent            = 'Listening...';
+    document.getElementById('answerStatus').textContent        = '🎤 Listening — speak clearly in English';
+    document.getElementById('transcriptBox').style.display     = 'block';
+  };
 
-        <div class="tip-box" id="tipBox">
-          <div class="tip-label">💡 Recruiter tip:</div>
-          <div class="tip-text" id="tipText"></div>
-        </div>
+  recognition.onresult = (event) => {
+    let final = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) final += event.results[i][0].transcript;
+    }
+    if (final) {
+      userTranscript += final;
+      document.getElementById('transcriptText').textContent = userTranscript;
+    }
+  };
 
-      </div>
+  recognition.onerror = (event) => {
+    if (event.error !== 'no-speech') {
+      document.getElementById('answerStatus').textContent = '⚠️ Error: ' + event.error + '. Try again.';
+    }
+    stopListening();
+  };
 
-      <!-- BLUR OVERLAY for locked questions -->
-      <div class="lock-overlay" id="lockOverlay" style="display:none">
-        <div class="lock-inner">
-          <div class="lock-icon">🔒</div>
-          <div class="lock-title">Premium Content</div>
-          <div class="lock-desc">Unlock 116 more questions with full model answers, keywords, follow-ups and recruiter tips.</div>
-          <button class="lock-cta" onclick="openPremiumModal()">Unlock Full Training — $19</button>
-        </div>
-      </div>
-    </div>
+  recognition.onend = () => {
+    stopListening(); // FIX: always stop — no auto-restart loop
+  };
 
-    <!-- Practice mode action buttons -->
-    <div class="action-btns" id="practiceActions">
-      <button class="action-btn btn-retry" onclick="retryQuestion()" id="retryBtn" style="display:none">
-        🔄 Try Again
-      </button>
-      <button class="action-btn btn-happy" onclick="nextQuestion()" id="happyBtn" style="display:none">
-        ✅ I'm happy — Next Question
-      </button>
-      <button class="action-btn btn-skip" onclick="nextQuestion()">
-        ⏭ Skip this question
-      </button>
-    </div>
+  try { recognition.start(); } catch(e) { console.warn(e); }
+}
 
-  </div>
+function stopListening() {
+  isListening = false;
+  if (recognition) { try { recognition.stop(); } catch(e){} }
+  document.getElementById('micBtn').classList.remove('listening');
+  document.getElementById('micLabel').textContent = 'Tap to speak';
 
-</main>
-</div>
+  if (userTranscript.trim().length > 3) {
+    scoreAnswer();
+  } else {
+    document.getElementById('answerStatus').textContent = 'No speech detected. Press the mic and try again.';
+  }
+}
 
-<!-- PREMIUM MODAL -->
-<div class="modal-overlay" id="premiumModal" style="display:none" onclick="if(event.target===this)closePremiumModal()">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closePremiumModal()">✕</button>
-    <div style="text-align:center; font-size:36px; margin-bottom:16px">🔒</div>
-    <h2 style="text-align:center; margin-bottom:8px">Unlock Full Training</h2>
-    <p style="text-align:center; color:var(--text-muted); margin-bottom:24px; font-size:14px">
-      Get access to all 120 questions with full model answers, keyword analysis, follow-up questions, voice scoring and your completion certificate.
-    </p>
-    <div class="modal-price-row">
-      <span class="modal-price">$19</span>
-      <span class="modal-price-old">$49</span>
-    </div>
-    <input type="email" placeholder="Your email to reserve your spot" id="premiumEmail" style="width:100%; margin-bottom:12px">
-    <button class="btn-premium" style="width:100%" onclick="handlePremiumSignup()">Unlock Full Training — $19</button>
-    <p style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:12px">🔒 30-day money-back guarantee · SSL secured</p>
-  </div>
-</div>
+// ================================================================
+// SCORING ENGINE
+// ================================================================
+function scoreAnswer() {
+  const q          = filteredQs[currentIndex];
+  const transcript = userTranscript.trim().toLowerCase();
+  const modelWords = tokenize(q.modelAnswer);
+  const userWords  = tokenize(transcript);
 
-<footer class="footer" style="margin-top:0">
-  <div class="footer-bottom">
-    <p>© 2025 CruiseInterviewAcademy · 🔒 SSL Secured · Your data is protected</p>
-  </div>
-</footer>
+  let matched = 0;
+  modelWords.forEach(mw => {
+    if (userWords.some(uw => fuzzyMatch(uw, mw))) matched++;
+  });
+  const accuracy = Math.round((matched / modelWords.length) * 100);
 
-<script src="questions.js"></script>
-<script src="main.js"></script>
-<script src="interview.js"></script>
-</body>
-</html>
+  const coloredUser = userWords.map(uw => {
+    const exact = modelWords.some(mw => mw === uw);
+    const close = !exact && modelWords.some(mw => fuzzyMatch(uw, mw));
+    return { word: uw, color: exact ? 'green' : close ? 'yellow' : 'red' };
+  });
+
+  const kwMatched = q.keywords.filter(kw =>
+    userWords.some(uw => fuzzyMatch(uw, kw.toLowerCase()))
+  );
+  const kwScore    = Math.round((kwMatched.length / q.keywords.length) * 100);
+  const finalScore = Math.round(accuracy * 0.7 + kwScore * 0.3);
+
+  displayScore(finalScore, accuracy, kwMatched.length, q.keywords.length, coloredUser);
+  saveScore(q.id, finalScore);
+
+  if (currentMode === 'practice') {
+    document.getElementById('retryBtn').style.display = 'inline-flex';
+    document.getElementById('happyBtn').style.display = 'inline-flex';
+  } else {
+    setTimeout(() => nextQuestion(), 4000);
+  }
+
+  showEncouragement(ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)]);
+  updateProgressStats();
+}
+
+function tokenize(str) {
+  return str.toLowerCase()
+    .replace(/[^a-z\s']/g, '')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !STOPWORDS.includes(w));
+}
+
+function fuzzyMatch(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 3) return false;
+  return levenshtein(a, b) <= 3; // FIX: tolerance 3 for non-native accents
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m+1}, (_,i) =>
+    Array.from({length: n+1}, (_,j) => j === 0 ? i : 0)
+  );
+  for (let j = 1; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+const STOPWORDS = ['the','and','for','that','this','with','from','are','was','were','have',
+  'has','had','been','will','would','could','should','not','but','you','your','their','they',
+  'what','when','how','who','its','our','all','can','any','one','also','very','just','more',
+  'make','than','about','into','each','some','then','there'];
+
+function displayScore(final, accuracy, kwMatched, kwTotal, coloredWords) {
+  const scoreCircle = document.getElementById('scoreCircle');
+  document.getElementById('scoreNum').textContent = final + '%';
+  scoreCircle.className = 'score-circle ' + (final >= 75 ? 'good' : final >= 50 ? 'ok' : 'poor');
+  document.getElementById('scoreWrap').style.display = 'flex';
+
+  document.getElementById('scoreBreakdown').innerHTML = `
+    <div>Word coverage: <strong style="color:${accuracy>=75?'var(--green)':accuracy>=50?'var(--amber)':'var(--red)'};">${accuracy}%</strong></div>
+    <div>Keywords used: <strong style="color:var(--accent);">${kwMatched}/${kwTotal}</strong></div>
+    <div style="margin-top:6px;font-size:12px;">${getScoreMessage(final)}</div>
+  `;
+
+  const compText = document.getElementById('comparisonText');
+  compText.innerHTML = '';
+  coloredWords.forEach(({word, color}) => {
+    const span       = document.createElement('span');
+    span.className   = 'w-' + color;
+    span.textContent = word + ' ';
+    compText.appendChild(span);
+  });
+  document.getElementById('comparisonWrap').style.display = 'block';
+  document.getElementById('answerStatus').textContent = 'Score calculated — see breakdown below';
+}
+
+function getScoreMessage(score) {
+  if (score >= 85) return '🏆 Excellent! You are interview-ready!';
+  if (score >= 70) return '✅ Great job! Practice a few more times to perfect it.';
+  if (score >= 50) return '📈 Good start! Focus on the highlighted keywords.';
+  return '💪 Keep practicing! Review the model answer and try again.';
+}
+
+function saveScore(qId, score) {
+  if (!sessionScores[qId]) sessionScores[qId] = [];
+  sessionScores[qId].push(score);
+  localStorage.setItem('cia_scores', JSON.stringify(sessionScores));
+}
+
+function updateProgressStats() {
+  const allScores = Object.values(sessionScores).flat();
+  const answered  = Object.keys(sessionScores).length;
+  const avg  = allScores.length ? Math.round(allScores.reduce((a,b)=>a+b,0)/allScores.length) : null;
+  const best = allScores.length ? Math.max(...allScores) : null;
+  const pct  = Math.round((answered / QUESTIONS.length) * 100);
+
+  document.getElementById('answeredCount').textContent        = answered;
+  document.getElementById('avgScore').textContent             = avg  !== null ? avg  + '%' : '—';
+  document.getElementById('bestScore').textContent            = best !== null ? best + '%' : '—';
+  document.getElementById('overallProgressFill').style.width  = pct + '%';
+}
+
+function retryQuestion() {
+  userTranscript = '';
+  document.getElementById('transcriptBox').style.display   = 'none';
+  document.getElementById('transcriptText').textContent    = '';
+  document.getElementById('scoreWrap').style.display       = 'none';
+  document.getElementById('comparisonWrap').style.display  = 'none';
+  document.getElementById('retryBtn').style.display        = 'none';
+  document.getElementById('happyBtn').style.display        = 'none';
+  document.getElementById('answerStatus').textContent      = 'Press the microphone and speak your answer in English';
+  const enc = document.querySelector('.encouragement');
+  if (enc) enc.remove();
+}
+
+function showEncouragement(msg) {
+  const existing = document.querySelector('.encouragement');
+  if (existing) existing.remove();
+  const div       = document.createElement('div');
+  div.className   = 'encouragement';
+  div.textContent = msg;
+  document.getElementById('practiceActions').after(div);
+}
+
+// ================================================================
+// TEXT TO SPEECH — question, model answer, follow-up
+// ================================================================
+let voices = [];
+
+function loadVoices() {
+  voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  const sel = document.getElementById('voiceSelect');
+  if (!sel) return;
+  sel.innerHTML = '';
+  const engVoices = voices.filter(v => v.lang.startsWith('en'));
+  if (!engVoices.length) { sel.innerHTML = '<option>No voices found</option>'; return; }
+
+  const preferred = ['Google UK English Male','Daniel','Google US English','Samantha','Alex'];
+  engVoices.sort((a,b) => {
+    let ai = preferred.findIndex(p => a.name.includes(p.split(' ')[0]));
+    let bi = preferred.findIndex(p => b.name.includes(p.split(' ')[0]));
+    if (ai<0) ai=999; if (bi<0) bi=999;
+    return ai - bi;
+  });
+  engVoices.forEach(v => {
+    const opt       = document.createElement('option');
+    opt.value       = v.name;
+    opt.textContent = v.name;
+    sel.appendChild(opt);
+  });
+  const saved = localStorage.getItem('cia_voice');
+  if (saved && engVoices.find(v => v.name === saved)) sel.value = saved;
+  sel.addEventListener('change', () => localStorage.setItem('cia_voice', sel.value));
+}
+
+function setupRateSlider() {
+  const slider = document.getElementById('rateSlider');
+  const val    = document.getElementById('rateVal');
+  if (!slider) return;
+  const saved     = parseFloat(localStorage.getItem('cia_rate') || '1.0');
+  slider.value    = saved;
+  val.textContent = saved.toFixed(1);
+  slider.addEventListener('input', () => {
+    val.textContent = parseFloat(slider.value).toFixed(1);
+    localStorage.setItem('cia_rate', slider.value);
+  });
+}
+
+// Unified speak function — question / model answer / follow-up
+function speakText(type) {
+  if (!window.speechSynthesis) return;
+  if (isListening) stopListening(); // CRITICAL: stop mic before speaking
+  speechSynthesis.cancel();
+
+  const q = filteredQs[currentIndex];
+  const map = {
+    question: { text: q.question,                              btnId: 'listenBtn'       },
+    answer:   { text: q.modelAnswer,                           btnId: 'listenAnswerBtn' },
+    followup: { text: q.followUp + '. ' + q.followUpAnswer,   btnId: 'listenFollowBtn' }
+  };
+  const item = map[type];
+  if (!item || !item.text) return;
+
+  const utt   = new SpeechSynthesisUtterance(item.text);
+  const sel   = document.getElementById('voiceSelect');
+  const voice = voices.find(v => v.name === sel?.value);
+  if (voice) utt.voice = voice;
+  utt.rate  = parseFloat(document.getElementById('rateSlider')?.value || '1.0');
+  utt.pitch = 1.0;
+
+  const btn = document.getElementById(item.btnId);
+  if (btn) {
+    const original = btn.textContent;
+    btn.textContent = '🔊 Speaking...';
+    btn.classList.add('speaking');
+    utt.onend = () => { btn.textContent = original; btn.classList.remove('speaking'); };
+  }
+  speechSynthesis.speak(utt);
+}
+
+// ================================================================
+// PDF GENERATION — Premium only
+// ================================================================
+function handlePdfDownload() {
+  if (!isPremium) { openPremiumModal(); return; }
+  generatePDF();
+}
+
+function generatePDF() {
+  if (!window.jspdf) {
+    const script  = document.createElement('script');
+    script.src    = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => buildPDF();
+    document.head.appendChild(script);
+  } else {
+    buildPDF();
+  }
+}
+
+function buildPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const W = 210, mar = 18;
+  let y = 20;
+
+  const addLine = (text, size, bold, color) => {
+    doc.setFontSize(size);
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setTextColor(...(color || [30,30,30]));
+    doc.splitTextToSize(text, W - mar*2).forEach(line => {
+      if (y > 275) { doc.addPage(); y = 20; }
+      doc.text(line, mar, y);
+      y += size * 0.45;
+    });
+    y += 2;
+  };
+
+  doc.setFillColor(11,60,93);
+  doc.rect(0, 0, W, 28, 'F');
+  doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255);
+  doc.text('CruiseInterviewAcademy', mar, 13);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text('120 Real Cruise Interview Questions — Key Answers & Keywords', mar, 21);
+  y = 36;
+
+  const depts     = ['general','entertainment','food','housekeeping','guestservices'];
+  const deptNames = { general:'General', entertainment:'Entertainment', food:'Food & Beverage', housekeeping:'Housekeeping', guestservices:'Guest Services' };
+
+  depts.forEach(dept => {
+    const qs = QUESTIONS.filter(q => q.dept === dept);
+    if (!qs.length) return;
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setFillColor(238,248,255);
+    doc.rect(mar-2, y-5, W-mar*2+4, 10, 'F');
+    addLine('▶ ' + deptNames[dept], 13, true, [11,60,93]);
+    y += 3;
+    qs.forEach(q => {
+      if (y > 265) { doc.addPage(); y = 20; }
+      addLine(`Q${q.id}. ${q.question}`,           11,   true,  [20,20,20]);
+      addLine('Answer: '    + q.modelAnswer,        9,    false, [60,60,60]);
+      addLine('Keywords: '  + q.keywords.join(' · '), 8.5, false, [15,120,80]);
+      addLine('Follow-up: ' + q.followUp,           8.5,  true,  [80,50,140]);
+      addLine(q.followUpAnswer,                      8.5,  false, [100,100,100]);
+      addLine('Tip: '       + q.tip,                8.5,  false, [160,110,10]);
+      y += 4;
+      doc.setDrawColor(220,230,240);
+      doc.line(mar, y, W-mar, y);
+      y += 5;
+    });
+  });
+
+  const total = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= total; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8); doc.setTextColor(150,150,150);
+    doc.text(`CruiseInterviewAcademy.com  ·  Page ${i} of ${total}  ·  Premium Content`, mar, 292);
+  }
+  doc.save('CruiseInterviewAcademy_120Questions.pdf');
+}
+
+// ================================================================
+// PREMIUM MODAL
+// ================================================================
+function openPremiumModal() {
+  document.getElementById('premiumModal').style.display = 'flex';
+}
+function closePremiumModal() {
+  document.getElementById('premiumModal').style.display = 'none';
+}
+function handlePremiumSignup() {
+  const email = document.getElementById('premiumEmail')?.value.trim();
+  if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+  localStorage.setItem('cia_premium', 'true');
+  localStorage.setItem('cia_user', JSON.stringify({ email, premium:true, joinedAt: new Date().toISOString() }));
+  isPremium = true;
+  closePremiumModal();
+  loadQuestion(currentIndex);
+  alert('🎉 Welcome to Premium! All 120 questions are now unlocked.');
+}
