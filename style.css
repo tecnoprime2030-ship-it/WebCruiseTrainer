@@ -680,8 +680,8 @@ section > p {
 /* ---- REFERRAL ---- */
 .referral {
   background: linear-gradient(135deg, #0a1f3d, #0c2952, #0a1f3d);
-  border: 1px solid var(--border-2);
-  border-radius: var(--radius-lg);
+  border: 1px solid rgba(56,189,248,0.28);
+  border-radius: 16px;
   padding: 56px 48px;
   margin-bottom: 72px;
 }
@@ -693,41 +693,117 @@ section > p {
   max-width: 900px;
   margin: auto;
 }
-.referral-text h2 { font-size: clamp(22px, 3vw, 32px); margin-bottom: 12px; }
-.referral-text p  { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
-.referral-text strong { color: var(--amber-light); }
-.referral-steps { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.referral-steps li { font-size: 14px; color: var(--text-muted); display: flex; gap: 8px; align-items: flex-start; }
-
+.referral-text h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #e2e8f0;
+}
+.referral-text p {
+  font-size: 15px;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  max-width: none;
+}
+.referral-text strong { color: #fbbf24; }
+.referral-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.referral-steps li {
+  font-size: 14px;
+  color: #94a3b8;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 0;
+  border: none;
+  text-decoration: none;
+}
 .referral-box {
-  background: var(--surface);
-  border: 1px solid var(--border-2);
-  border-radius: var(--radius-lg);
+  background: #112240;
+  border: 1px solid rgba(56,189,248,0.28);
+  border-radius: 16px;
   padding: 28px 24px;
 }
-.ref-box-label { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
-.ref-link-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.ref-box-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ref-link-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
 .ref-link-row input {
-  flex: 1; font-size: 13px; padding: 9px 12px;
-  background: var(--bg-2); border: 1px solid var(--border-2);
-  border-radius: 6px; color: var(--text-muted);
-  font-family: monospace; min-width: 0;
+  flex: 1;
+  font-size: 12px;
+  padding: 9px 12px;
+  background: #0a1628;
+  border: 1px solid rgba(56,189,248,0.28);
+  border-radius: 6px;
+  color: #94a3b8;
+  font-family: monospace;
+  min-width: 0;
+  outline: none;
 }
 .ref-copy-btn {
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  color: #020c1b; border: none; padding: 9px 18px;
-  border-radius: 6px; font-size: 13px; font-weight: 700;
-  cursor: pointer; font-family: 'Poppins', sans-serif;
-  transition: all var(--tr); white-space: nowrap;
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  color: #020c1b;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.25s ease;
+  white-space: nowrap;
 }
-.ref-copy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(56,189,248,0.3); }
-.ref-note { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.5; }
-.ref-stats { display: flex; gap: 20px; border-top: 1px solid var(--border); padding-top: 18px; }
-.ref-stat { text-align: center; flex: 1; }
-.ref-stat-num { display: block; font-size: 28px; font-weight: 700; color: var(--amber-light); }
-.ref-stat span { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.ref-copy-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(56,189,248,0.3);
+}
+.ref-note {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.ref-stats {
+  display: flex;
+  gap: 20px;
+  border-top: 1px solid rgba(56,189,248,0.12);
+  padding-top: 18px;
+}
+.ref-stat {
+  text-align: center;
+  flex: 1;
+}
+.ref-stat-num {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fbbf24;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.ref-stat span {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
 @media (max-width: 768px) {
-  .referral { padding: 36px 24px; }
-  .referral-inner { grid-template-columns: 1fr; gap: 32px; }
+  .referral { padding: 36px 20px; }
+  .referral-inner { grid-template-columns: 1fr; gap: 28px; }
 }
