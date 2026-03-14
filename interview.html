@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Practice – CruiseInterviewAcademy</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="interview.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar" id="topbar">
+  <div class="logo">
+    <img src="images/logo.png" alt="CruiseInterviewAcademy" onerror="this.style.display='none'">
+    <span class="logo-name">CruiseInterviewAcademy</span>
+  </div>
+  <nav class="menu" id="mainMenu">
+    <a href="index.html">Home</a>
+    <a href="interview.html" class="active">Interview</a>
+    <a href="#">English Training</a>
+    <a href="#">Vocabulary</a>
+    <a href="#">Entertainment</a>
+    <a href="#">Jobs</a>
+  </nav>
+  <div class="auth-area">
+    <div class="auth-buttons">
+      <button class="btn-login" id="loginBtn">Login</button>
+      <button class="btn-cart">🛒 Cart</button>
+    </div>
+    <select id="language-selector" class="lang-select">
+      <option value="en">🇬🇧 EN</option>
+      <option value="es">🇪🇸 ES</option>
+      <option value="it">🇮🇹 IT</option>
+      <option value="fr">🇫🇷 FR</option>
+      <option value="pt">🇵🇹 PT</option>
+      <option value="ph">🇵🇭 PH</option>
+    </select>
+  </div>
+</header>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="section-label">INTERVIEW SIMULATOR</div>
+    <h1>Cruise Ship Interview Practice</h1>
+    <p>120 real questions. Voice simulation. Instant feedback. Two modes to train like a pro.</p>
+    <div class="chrome-notice">
+      🎤 Voice features work best in <strong>Google Chrome</strong> on desktop
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="interview-layout">
+
+<!-- LEFT PANEL: controls -->
+<aside class="interview-sidebar">
+
+  <!-- Mode selector -->
+  <div class="mode-selector">
+    <button class="mode-btn active" id="modePracticeBtn" onclick="setMode('practice')">
+      <span class="mode-icon">🎓</span>
+      <span class="mode-label">Practice Mode</span>
+      <span class="mode-sub">Repeat until perfect</span>
+    </button>
+    <button class="mode-btn" id="modeSimBtn" onclick="setMode('simulation')">
+      <span class="mode-icon">⏱</span>
+      <span class="mode-label">Simulation Mode</span>
+      <span class="mode-sub">Real interview pressure</span>
+    </button>
+  </div>
+
+  <!-- Department filter -->
+  <div class="filter-box">
+    <div class="filter-label">Department</div>
+    <div class="dept-filters">
+      <button class="dept-btn active" onclick="filterDept('all')">All</button>
+      <button class="dept-btn" onclick="filterDept('general')">General</button>
+      <button class="dept-btn" onclick="filterDept('entertainment')">Entertainment</button>
+      <button class="dept-btn" onclick="filterDept('food')">Food & Bev</button>
+      <button class="dept-btn" onclick="filterDept('housekeeping')">Housekeeping</button>
+      <button class="dept-btn" onclick="filterDept('guestservices')">Guest Services</button>
+    </div>
+  </div>
+
+  <!-- Voice settings -->
+  <div class="voice-box">
+    <div class="filter-label">🔊 Voice Settings</div>
+    <label class="voice-label">Reading voice</label>
+    <select id="voiceSelect" class="voice-select"></select>
+    <label class="voice-label">Speed — <span id="rateVal">1.0</span>x</label>
+    <input type="range" id="rateSlider" min="0.5" max="1.5" step="0.1" value="1.0">
+  </div>
+
+  <!-- Progress -->
+  <div class="sidebar-progress">
+    <div class="filter-label">Your Progress</div>
+    <div class="prog-row">
+      <span>Questions answered</span>
+      <strong id="answeredCount">0</strong>
+    </div>
+    <div class="prog-row">
+      <span>Average score</span>
+      <strong id="avgScore">—</strong>
+    </div>
+    <div class="prog-row">
+      <span>Best score</span>
+      <strong id="bestScore">—</strong>
+    </div>
+    <div class="progress-bar" style="margin-top:10px">
+      <div class="progress-fill" id="overallProgressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- PDF Download -->
+  <button class="pdf-btn" onclick="handlePdfDownload()">
+    📄 Download Full Q&A PDF
+    <span class="pdf-badge">Premium</span>
+  </button>
+
+</aside>
+
+<!-- RIGHT PANEL: question + answer area -->
+<main class="interview-main">
+
+  <!-- Question counter & nav -->
+  <div class="q-topbar">
+    <div class="q-counter">
+      Question <span id="qCurrent">1</span> of <span id="qTotal">120</span>
+    </div>
+    <div class="q-dept-badge" id="qDeptBadge">General</div>
+    <div class="q-nav">
+      <button class="q-nav-btn" onclick="prevQuestion()">← Prev</button>
+      <button class="q-nav-btn" onclick="nextQuestion()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Question card -->
+  <div class="question-card" id="questionCard">
+    <div class="q-number" id="qNumber">01</div>
+    <div class="q-text" id="qText">Loading question...</div>
+
+    <!-- Listen button -->
+    <button class="listen-btn" onclick="speakQuestion()" id="listenBtn">
+      🔊 Listen to question
+    </button>
+  </div>
+
+  <!-- PRACTICE MODE UI -->
+  <div id="practiceUI">
+
+    <!-- Timer bar (simulation only, hidden in practice) -->
+    <div class="timer-wrap" id="timerWrap" style="display:none">
+      <div class="timer-bar-bg">
+        <div class="timer-bar-fill" id="timerFill"></div>
+      </div>
+      <span class="timer-text" id="timerText">60s</span>
+    </div>
+
+    <!-- Voice answer area -->
+    <div class="answer-area">
+      <div class="answer-status" id="answerStatus">
+        Press the microphone and speak your answer in English
+      </div>
+
+      <div class="mic-wrap">
+        <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+          <span class="mic-icon">🎤</span>
+          <span class="mic-label" id="micLabel">Tap to speak</span>
+        </button>
+      </div>
+
+      <!-- Live transcript -->
+      <div class="transcript-box" id="transcriptBox" style="display:none">
+        <div class="transcript-label">Your answer:</div>
+        <div class="transcript-text" id="transcriptText"></div>
+      </div>
+
+      <!-- Score display -->
+      <div class="score-wrap" id="scoreWrap" style="display:none">
+        <div class="score-circle" id="scoreCircle">
+          <span class="score-num" id="scoreNum">0%</span>
+          <span class="score-label">accuracy</span>
+        </div>
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+      </div>
+
+      <!-- Color coded answer comparison -->
+      <div class="comparison-wrap" id="comparisonWrap" style="display:none">
+        <div class="comparison-label">Word-by-word comparison:</div>
+        <div class="comparison-text" id="comparisonText"></div>
+        <div class="legend">
+          <span class="legend-item"><span class="dot green"></span> Correct</span>
+          <span class="legend-item"><span class="dot yellow"></span> Close</span>
+          <span class="legend-item"><span class="dot red"></span> Missing/Wrong</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Model answer section (locked for non-premium after q4) -->
+    <div class="model-answer-section" id="modelAnswerSection">
+      <button class="toggle-answer-btn" id="toggleAnswerBtn" onclick="toggleModelAnswer()">
+        👁 Show Model Answer
+      </button>
+
+      <div class="model-answer-content" id="modelAnswerContent" style="display:none">
+
+        <div class="model-answer-box" id="modelAnswerBox">
+          <!-- filled by JS -->
+        </div>
+
+        <div class="keywords-box">
+          <div class="kw-label">🔑 Key words to use:</div>
+          <div class="kw-chips" id="kwChips"></div>
+        </div>
+
+        <div class="followup-box" id="followupBox">
+          <div class="fu-label">🔄 Likely follow-up question:</div>
+          <div class="fu-question" id="fuQuestion"></div>
+          <div class="fu-answer" id="fuAnswer" style="display:none"></div>
+          <button class="fu-toggle" onclick="toggleFollowUp()">Show follow-up answer</button>
+        </div>
+
+        <div class="tip-box" id="tipBox">
+          <div class="tip-label">💡 Recruiter tip:</div>
+          <div class="tip-text" id="tipText"></div>
+        </div>
+
+      </div>
+
+      <!-- BLUR OVERLAY for locked questions -->
+      <div class="lock-overlay" id="lockOverlay" style="display:none">
+        <div class="lock-inner">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-title">Premium Content</div>
+          <div class="lock-desc">Unlock 116 more questions with full model answers, keywords, follow-ups and recruiter tips.</div>
+          <button class="lock-cta" onclick="openPremiumModal()">Unlock Full Training — $19</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Practice mode action buttons -->
+    <div class="action-btns" id="practiceActions">
+      <button class="action-btn btn-retry" onclick="retryQuestion()" id="retryBtn" style="display:none">
+        🔄 Try Again
+      </button>
+      <button class="action-btn btn-happy" onclick="nextQuestion()" id="happyBtn" style="display:none">
+        ✅ I'm happy — Next Question
+      </button>
+      <button class="action-btn btn-skip" onclick="nextQuestion()">
+        ⏭ Skip this question
+      </button>
+    </div>
+
+  </div>
+
+</main>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="premiumModal" style="display:none" onclick="if(event.target===this)closePremiumModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePremiumModal()">✕</button>
+    <div style="text-align:center; font-size:36px; margin-bottom:16px">🔒</div>
+    <h2 style="text-align:center; margin-bottom:8px">Unlock Full Training</h2>
+    <p style="text-align:center; color:var(--text-muted); margin-bottom:24px; font-size:14px">
+      Get access to all 120 questions with full model answers, keyword analysis, follow-up questions, voice scoring and your completion certificate.
+    </p>
+    <div class="modal-price-row">
+      <span class="modal-price">$19</span>
+      <span class="modal-price-old">$49</span>
+    </div>
+    <input type="email" placeholder="Your email to reserve your spot" id="premiumEmail" style="width:100%; margin-bottom:12px">
+    <button class="btn-premium" style="width:100%" onclick="handlePremiumSignup()">Unlock Full Training — $19</button>
+    <p style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:12px">🔒 30-day money-back guarantee · SSL secured</p>
+  </div>
+</div>
+
+<footer class="footer" style="margin-top:0">
+  <div class="footer-bottom">
+    <p>© 2025 CruiseInterviewAcademy · 🔒 SSL Secured · Your data is protected</p>
+  </div>
+</footer>
+
+<script src="questions.js"></script>
+<script src="main.js"></script>
+<script src="interview.js"></script>
+</body>
+</html>
