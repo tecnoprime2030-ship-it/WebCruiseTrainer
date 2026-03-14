@@ -558,3 +558,23 @@
   .action-btns { flex-direction: column; }
   .action-btn { width: 100%; text-align: center; }
 }
+
+/* Listen group — 3 audio buttons */
+.listen-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.listen-btn-answer {
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.3);
+  color: var(--green);
+}
+.listen-btn-answer:hover { background: rgba(16,185,129,0.2); }
+.listen-btn-followup {
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.3);
+  color: var(--purple);
+}
+.listen-btn-followup:hover { background: rgba(139,92,246,0.2); }
