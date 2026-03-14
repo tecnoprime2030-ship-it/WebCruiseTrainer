@@ -475,7 +475,7 @@ ref_s3:'Kumita ng $2 para sa bawat kaibigan na sumasali sa Premium',
 ref_your_link:'Ang iyong referral link', ref_copy:'Kopyahin',
 ref_note:'💡 Mag-sign up o mag-login para ma-activate ang iyong personal na link',
 ref_referred:'na-refer', ref_earned:'kinita',
-  }
+  },
 };
 
 // ================================================================
