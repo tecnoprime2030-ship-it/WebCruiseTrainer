@@ -77,6 +77,13 @@ const TRANSLATIONS = {
     sb_ad7:'🧳 Work Abroad Programs', sb_ad8:'✈ Hospitality Careers Worldwide',
     chrome_tip:'🎤 For best voice results, use <strong>Google Chrome</strong> on desktop.',
     footer_tag:'Your journey starts here.'
+ref_label:'REFER A FRIEND', ref_title:'Share & Earn $2 per Referral',
+ref_desc:'Every friend you refer who buys Full Training gets you <strong>$2 back</strong>. No limits.',
+ref_s1:'Get your unique referral link below', ref_s2:'Share it on WhatsApp, Instagram or TikTok',
+ref_s3:'Earn $2 for every friend who joins Premium',
+ref_your_link:'Your referral link', ref_copy:'Copy', 
+ref_note:'💡 Sign up or log in to activate your personal link',
+ref_referred:'referred', ref_earned:'earned',
   },
 
   es: {
@@ -148,6 +155,13 @@ const TRANSLATIONS = {
     sb_ad7:'🧳 Programas Work Abroad', sb_ad8:'✈ Carreras en Hospitalidad',
     chrome_tip:'🎤 Para mejor simulación de voz, usá <strong>Google Chrome</strong> en desktop.',
     footer_tag:'Tu viaje empieza aquí.'
+   ref_label:'REFERIDOS', ref_title:'Compartí y Ganá $2 por Referido',
+ref_desc:'Cada amigo que traés y compra el entrenamiento completo te devuelve <strong>$2</strong>. Sin límites.',
+ref_s1:'Obtené tu link único abajo', ref_s2:'Compartilo por WhatsApp, Instagram o TikTok',
+ref_s3:'Ganá $2 por cada amigo que se una al Premium',
+ref_your_link:'Tu link de referido', ref_copy:'Copiar',
+ref_note:'💡 Registrate o ingresá para activar tu link personal',
+ref_referred:'referidos', ref_earned:'ganado',
   },
 
   pt: {
