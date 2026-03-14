@@ -76,7 +76,7 @@ const TRANSLATIONS = {
     sb_ad5:'🌎 International Cruise Jobs', sb_ad6:'⚓ Cruise Recruitment Agencies',
     sb_ad7:'🧳 Work Abroad Programs', sb_ad8:'✈ Hospitality Careers Worldwide',
     chrome_tip:'🎤 For best voice results, use <strong>Google Chrome</strong> on desktop.',
-    footer_tag:'Your journey starts here.'
+    footer_tag:'Your journey starts here.',
 ref_label:'REFER A FRIEND', ref_title:'Share & Earn $2 per Referral',
 ref_desc:'Every friend you refer who buys Full Training gets you <strong>$2 back</strong>. No limits.',
 ref_s1:'Get your unique referral link below', ref_s2:'Share it on WhatsApp, Instagram or TikTok',
@@ -154,7 +154,7 @@ ref_referred:'referred', ref_earned:'earned',
     sb_ad5:'🌎 Empleos en Cruceros Internacionales', sb_ad6:'⚓ Agencias de Reclutamiento',
     sb_ad7:'🧳 Programas Work Abroad', sb_ad8:'✈ Carreras en Hospitalidad',
     chrome_tip:'🎤 Para mejor simulación de voz, usá <strong>Google Chrome</strong> en desktop.',
-    footer_tag:'Tu viaje empieza aquí.'
+    footer_tag:'Tu viaje empieza aquí.',
    ref_label:'REFERIDOS', ref_title:'Compartí y Ganá $2 por Referido',
 ref_desc:'Cada amigo que traés y compra el entrenamiento completo te devuelve <strong>$2</strong>. Sin límites.',
 ref_s1:'Obtené tu link único abajo', ref_s2:'Compartilo por WhatsApp, Instagram o TikTok',
@@ -232,7 +232,14 @@ ref_referred:'referidos', ref_earned:'ganado',
     sb_ad5:'🌎 Empregos Internacionais em Cruzeiros', sb_ad6:'⚓ Agências de Recrutamento',
     sb_ad7:'🧳 Programas Work Abroad', sb_ad8:'✈ Carreiras em Hospitalidade',
     chrome_tip:'🎤 Para melhor simulação de voz, use o <strong>Google Chrome</strong> no desktop.',
-    footer_tag:'Sua jornada começa aqui.'
+    footer_tag:'Sua jornada começa aqui.', 
+     ref_label:'INDICAÇÕES', ref_title:'Compartilhe e Ganhe $2 por Indicação',
+ref_desc:'Cada amigo que você indicar e comprar o treinamento completo te devolve <strong>$2</strong>. Sem limites.',
+ref_s1:'Pegue seu link único abaixo', ref_s2:'Compartilhe no WhatsApp, Instagram ou TikTok',
+ref_s3:'Ganhe $2 por cada amigo que entrar no Premium',
+ref_your_link:'Seu link de indicação', ref_copy:'Copiar',
+ref_note:'💡 Cadastre-se ou entre para ativar seu link pessoal',
+ref_referred:'indicados', ref_earned:'ganho',
   },
 
   fr: {
@@ -303,7 +310,15 @@ ref_referred:'referidos', ref_earned:'ganado',
     sb_ad5:'🌎 Emplois Internationaux Croisière', sb_ad6:'⚓ Agences de Recrutement',
     sb_ad7:'🧳 Programmes Work Abroad', sb_ad8:'✈ Carrières en Hôtellerie',
     chrome_tip:'🎤 Pour une meilleure simulation vocale, utilisez <strong>Google Chrome</strong> sur bureau.',
-    footer_tag:'Votre voyage commence ici.'
+    footer_tag:'Votre voyage commence ici.',
+    ref_label:'PARRAINAGE', ref_title:'Partagez et Gagnez 2$ par Filleul',
+ref_desc:'Chaque ami que vous parrainez et qui achète la formation complète vous rapporte <strong>2$</strong>. Sans limite.',
+ref_s1:'Obtenez votre lien unique ci-dessous', ref_s2:'Partagez sur WhatsApp, Instagram ou TikTok',
+ref_s3:'Gagnez 2$ pour chaque ami qui rejoint le Premium',
+ref_your_link:'Votre lien de parrainage', ref_copy:'Copier',
+ref_note:'💡 Inscrivez-vous ou connectez-vous pour activer votre lien personnel',
+ref_referred:'parrainés', ref_earned:'gagné',
+
   },
 
   it: {
@@ -374,7 +389,14 @@ ref_referred:'referidos', ref_earned:'ganado',
     sb_ad5:'🌎 Lavori Internazionali in Crociera', sb_ad6:'⚓ Agenzie di Reclutamento',
     sb_ad7:'🧳 Programmi Work Abroad', sb_ad8:'✈ Carriere nell\'Ospitalità',
     chrome_tip:'🎤 Per una migliore simulazione vocale, usa <strong>Google Chrome</strong> su desktop.',
-    footer_tag:'Il tuo viaggio inizia qui.'
+    footer_tag:'Il tuo viaggio inizia qui.',
+     ref_label:'REFERRAL', ref_title:'Condividi e Guadagna $2 per Referral',
+ref_desc:'Ogni amico che porti e acquista la formazione completa ti restituisce <strong>$2</strong>. Senza limiti.',
+ref_s1:'Ottieni il tuo link unico qui sotto', ref_s2:'Condividilo su WhatsApp, Instagram o TikTok',
+ref_s3:'Guadagna $2 per ogni amico che entra nel Premium',
+ref_your_link:'Il tuo link referral', ref_copy:'Copia',
+ref_note:'💡 Registrati o accedi per attivare il tuo link personale',
+ref_referred:'referrati', ref_earned:'guadagnato',
   },
 
   ph: {
@@ -445,7 +467,14 @@ ref_referred:'referidos', ref_earned:'ganado',
     sb_ad5:'🌎 Internasyonal na Trabaho sa Cruise', sb_ad6:'⚓ Mga Ahensya ng Rekrutment',
     sb_ad7:'🧳 Mga Programa ng Work Abroad', sb_ad8:'✈ Mga Karera sa Hospitalidad',
     chrome_tip:'🎤 Para sa pinakamahusay na simulasyon ng boses, gamitin ang <strong>Google Chrome</strong> sa desktop.',
-    footer_tag:'Nagsisimula ang iyong paglalakbay dito.'
+    footer_tag:'Nagsisimula ang iyong paglalakbay dito.',
+     ref_label:'MAG-REFER', ref_title:'Ibahagi at Kumita ng $2 bawat Referral',
+ref_desc:'Bawat kaibigan na iyong i-refer at bumili ng kumpletong pagsasanay ay nagbibigay sa iyo ng <strong>$2</strong>. Walang limitasyon.',
+ref_s1:'Kunin ang iyong natatanging link sa ibaba', ref_s2:'Ibahagi sa WhatsApp, Instagram o TikTok',
+ref_s3:'Kumita ng $2 para sa bawat kaibigan na sumasali sa Premium',
+ref_your_link:'Ang iyong referral link', ref_copy:'Kopyahin',
+ref_note:'💡 Mag-sign up o mag-login para ma-activate ang iyong personal na link',
+ref_referred:'na-refer', ref_earned:'kinita',
   }
 };
 
