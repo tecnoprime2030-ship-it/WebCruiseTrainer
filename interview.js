@@ -1,35 +1,83 @@
 /* ==============================================
    CruiseInterviewAcademy — interview.js
-   Voice recognition, scoring, practice mode,
-   simulation mode, PDF generation (jsPDF)
+   v3 — All 6 fixes applied:
+   1. Audio buttons next to each element
+   2. 3 answer variations per question
+   3. Free-style scoring (pronunciation only if low match)
+   4. ResponsiveVoice fallback + Web Speech primary
+   5. Better recognition with interim display
+   6. Visual improvements via CSS classes
    ============================================== */
 
-// ================================================================
-// STATE
-// ================================================================
-let currentMode    = 'practice';
-let currentDept    = 'all';
-let currentIndex   = 0;
-let filteredQs     = [];
-let isListening    = false;
-let recognition    = null;
-let simTimer       = null;
-let simTimeLeft    = 60;
+const FREE_LIMIT  = 4;
+let currentMode   = 'practice';
+let currentDept   = 'all';
+let currentIndex  = 0;
+let filteredQs    = [];
+let isListening   = false;
+let recognition   = null;
+let simTimer      = null;
+let simTimeLeft   = 60;
 let userTranscript = '';
 let sessionScores  = JSON.parse(localStorage.getItem('cia_scores') || '{}');
 let isPremium      = JSON.parse(localStorage.getItem('cia_premium') || 'false');
-const FREE_LIMIT   = 4;
+let voices         = [];
 
 const ENCOURAGEMENTS = [
   "Great effort! Keep practicing! 💪",
   "You're improving with every attempt! 🚀",
-  "That's the spirit! Cruise recruiters will love your confidence! ⚓",
+  "Cruise recruiters will love your confidence! ⚓",
   "Excellent! One step closer to boarding! 🚢",
-  "Keep going! Your dream job is within reach! 🌊",
-  "That's a strong answer! Polish those keywords! 🔑",
-  "Impressive! Your English is sounding more natural! 🎤",
-  "You've got this! Recruiters are looking for exactly this energy! ✨"
+  "Your dream job is within reach! 🌊",
+  "Strong answer! Polish those keywords! 🔑",
+  "Your English is sounding more natural! 🎤",
+  "You've got this! ✨"
 ];
+
+// ================================================================
+// ANSWER VARIATIONS — 3 styles per question
+// Generated from model answer tone variations
+// ================================================================
+function getVariations(q) {
+  return {
+    professional: q.modelAnswer,
+    natural: naturalizeAnswer(q.modelAnswer),
+    enthusiastic: enthusiasticAnswer(q.modelAnswer)
+  };
+}
+
+function naturalizeAnswer(text) {
+  return text
+    .replace(/I am /g, "I'm ")
+    .replace(/I have /g, "I've ")
+    .replace(/I would /g, "I'd ")
+    .replace(/I will /g, "I'll ")
+    .replace(/cannot /g, "can't ")
+    .replace(/do not /g, "don't ")
+    .replace(/it is /g, "it's ")
+    .replace(/that is /g, "that's ")
+    .replace(/they are /g, "they're ")
+    .replace(/we are /g, "we're ")
+    .replace(/\. I /g, ". Honestly, I ")
+    .replace(/Additionally,/g, "Also,")
+    .replace(/Furthermore,/g, "And also,")
+    .replace(/Therefore,/g, "So,");
+}
+
+function enthusiasticAnswer(text) {
+  const starters = [
+    "Absolutely! ",
+    "Great question! ",
+    "I love this topic! ",
+    "This is something I'm really passionate about! "
+  ];
+  const starter = starters[Math.floor(Math.random() * starters.length)];
+  return starter + naturalizeAnswer(text)
+    .replace(/\. ([A-Z])/g, (m, c) => '! ' + c)
+    .replace(/genuinely /g, 'truly ')
+    .replace(/I believe/g, "I strongly believe")
+    .replace(/I enjoy/g, "I absolutely love");
+}
 
 // ================================================================
 // INIT
@@ -49,7 +97,9 @@ document.addEventListener('DOMContentLoaded', function () {
 // QUESTION MANAGEMENT
 // ================================================================
 function buildFilteredList() {
-  filteredQs = currentDept === 'all' ? [...QUESTIONS] : QUESTIONS.filter(q => q.dept === currentDept);
+  filteredQs = currentDept === 'all'
+    ? [...QUESTIONS]
+    : QUESTIONS.filter(q => q.dept === currentDept);
   document.getElementById('qTotal').textContent = filteredQs.length;
 }
 
@@ -73,88 +123,134 @@ function loadQuestion(idx) {
   document.getElementById('qDeptBadge').textContent = q.deptLabel;
 
   resetAnswerUI();
-
-  const isLocked = !isPremium && q.id > FREE_LIMIT;
-  renderModelAnswer(q, isLocked);
+  renderModelAnswer(q, !isPremium && q.id > FREE_LIMIT);
   clearSimTimer();
   if (currentMode === 'simulation') startSimTimer();
 }
 
 function nextQuestion() {
-  if (currentIndex < filteredQs.length - 1) {
-    loadQuestion(currentIndex + 1);
-  } else {
-    showEncouragement("🏆 You've completed all questions in this set! Amazing work!");
-  }
+  if (currentIndex < filteredQs.length - 1) loadQuestion(currentIndex + 1);
+  else showEncouragement("🏆 You've completed all questions in this set! Amazing work!");
 }
 
-function prevQuestion() {
-  loadQuestion(currentIndex - 1);
-}
+function prevQuestion() { loadQuestion(currentIndex - 1); }
 
 function resetAnswerUI() {
   userTranscript = '';
   isListening    = false;
-  const micBtn   = document.getElementById('micBtn');
+  stopSpeaking();
+  const micBtn = document.getElementById('micBtn');
   if (micBtn) {
     micBtn.classList.remove('listening');
     document.getElementById('micLabel').textContent = 'Tap to speak';
   }
-  document.getElementById('transcriptBox').style.display   = 'none';
+  ['transcriptBox','scoreWrap','comparisonWrap'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
   document.getElementById('transcriptText').textContent    = '';
-  document.getElementById('scoreWrap').style.display       = 'none';
-  document.getElementById('comparisonWrap').style.display  = 'none';
   document.getElementById('retryBtn').style.display        = 'none';
   document.getElementById('happyBtn').style.display        = 'none';
   document.getElementById('answerStatus').textContent      = 'Press the microphone and speak your answer in English';
   document.getElementById('modelAnswerContent').style.display = 'none';
-  const toggleBtn = document.getElementById('toggleAnswerBtn');
-  if (toggleBtn) toggleBtn.textContent = '👁 Show Model Answer';
+  const tb = document.getElementById('toggleAnswerBtn');
+  if (tb) tb.textContent = '👁 Show Model Answer';
   if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
   const enc = document.querySelector('.encouragement');
   if (enc) enc.remove();
 }
 
 // ================================================================
-// RENDER MODEL ANSWER
+// RENDER MODEL ANSWER — with 3 variation tabs
 // ================================================================
 function renderModelAnswer(q, isLocked) {
-  document.getElementById('modelAnswerBox').textContent = q.modelAnswer;
-  document.getElementById('tipText').textContent        = q.tip;
-  document.getElementById('fuQuestion').textContent     = q.followUp;
-  document.getElementById('fuAnswer').textContent       = q.followUpAnswer;
-  document.getElementById('fuAnswer').style.display     = 'none';
-  document.querySelector('.fu-toggle').textContent      = 'Show follow-up answer';
+  const vars = getVariations(q);
 
+  // Build variation tabs HTML
+  document.getElementById('modelAnswerBox').innerHTML = `
+    <div class="var-tabs">
+      <button class="var-tab active" onclick="switchVariation('professional', this)">
+        💼 Professional
+      </button>
+      <button class="var-tab" onclick="switchVariation('natural', this)">
+        💬 Natural
+      </button>
+      <button class="var-tab" onclick="switchVariation('enthusiastic', this)">
+        🔥 Enthusiastic
+      </button>
+    </div>
+    <div class="var-content" id="varContent">${vars.professional}</div>
+    <button class="var-audio-btn" onclick="speakVariation()" id="varAudioBtn">
+      🔊 Listen to this version
+    </button>
+  `;
+
+  // Store variations on element for access
+  document.getElementById('modelAnswerBox').dataset.professional = vars.professional;
+  document.getElementById('modelAnswerBox').dataset.natural      = vars.natural;
+  document.getElementById('modelAnswerBox').dataset.enthusiastic = vars.enthusiastic;
+  document.getElementById('modelAnswerBox').dataset.current      = 'professional';
+
+  // Keywords
   const chips = document.getElementById('kwChips');
   chips.innerHTML = '';
   q.keywords.forEach(kw => {
-    const chip       = document.createElement('span');
+    const chip = document.createElement('span');
     chip.className   = 'kw-chip';
     chip.textContent = kw;
     chips.appendChild(chip);
   });
 
+  // Follow-up
+  document.getElementById('fuQuestion').textContent = q.followUp;
+  document.getElementById('fuAnswer').textContent   = q.followUpAnswer;
+  document.getElementById('fuAnswer').style.display = 'none';
+  const fuToggle = document.querySelector('.fu-toggle');
+  if (fuToggle) fuToggle.textContent = 'Show answer';
+
+  // Tip
+  document.getElementById('tipText').textContent = q.tip;
+
+  // Lock overlay
   document.getElementById('lockOverlay').style.display = isLocked ? 'flex' : 'none';
+}
+
+function switchVariation(type, btn) {
+  const box     = document.getElementById('modelAnswerBox');
+  const content = document.getElementById('varContent');
+  if (!box || !content) return;
+  content.textContent  = box.dataset[type] || '';
+  box.dataset.current  = type;
+  document.querySelectorAll('.var-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function speakVariation() {
+  const box  = document.getElementById('modelAnswerBox');
+  const text = box.dataset[box.dataset.current || 'professional'] || '';
+  const btn  = document.getElementById('varAudioBtn');
+  if (!text) return;
+  speakTextWithBtn(text, btn, '🔊 Listen to this version');
 }
 
 function toggleModelAnswer() {
   const content  = document.getElementById('modelAnswerContent');
   const btn      = document.getElementById('toggleAnswerBtn');
   const q        = filteredQs[currentIndex];
-  const isLocked = !isPremium && q.id > FREE_LIMIT;
-  if (isLocked) { openPremiumModal(); return; }
-  const showing = content.style.display !== 'none';
+  if (!isPremium && q.id > FREE_LIMIT) { openPremiumModal(); return; }
+  const showing  = content.style.display !== 'none';
   content.style.display = showing ? 'none' : 'block';
-  btn.textContent = showing ? '👁 Show Model Answer' : '👁 Hide Model Answer';
+  btn.textContent       = showing ? '👁 Show Model Answer' : '👁 Hide Model Answer';
 }
 
 function toggleFollowUp() {
-  const ans = document.getElementById('fuAnswer');
-  const btn = document.querySelector('.fu-toggle');
-  const showing = ans.style.display !== 'none';
+  const ans      = document.getElementById('fuAnswer');
+  const btn      = document.querySelector('.fu-toggle');
+  const audioBtn = document.getElementById('listenFollowAnsBtn');
+  const showing  = ans.style.display !== 'none';
   ans.style.display = showing ? 'none' : 'block';
-  btn.textContent   = showing ? 'Show follow-up answer' : 'Hide follow-up answer';
+  btn.textContent   = showing ? 'Show answer' : 'Hide answer';
+  if (audioBtn) audioBtn.style.display = showing ? 'none' : 'inline-flex';
 }
 
 // ================================================================
@@ -183,7 +279,7 @@ function startSimTimer() {
     if (simTimeLeft <= 0) {
       clearSimTimer();
       if (isListening) stopListening();
-      document.getElementById('answerStatus').textContent = "⏰ Time's up! See your score below.";
+      document.getElementById('answerStatus').textContent = "⏰ Time's up!";
     }
   }, 1000);
 }
@@ -210,73 +306,86 @@ function toggleMic() {
 }
 
 function startListening() {
-  // Stop any ongoing speech first — prevents mic capturing TTS output
-  if (window.speechSynthesis) speechSynthesis.cancel();
+  stopSpeaking(); // CRITICAL: stop TTS before mic — prevents echo loop
 
   if (/Mobi|Android/i.test(navigator.userAgent)) {
     document.getElementById('answerStatus').textContent =
-      '📱 For best results use Google Chrome on desktop. Mobile voice recognition is limited.';
+      '📱 Mobile detected — speak clearly. For best results use Chrome on desktop.';
   }
 
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert('Speech recognition is not supported in this browser. Please use Google Chrome on desktop.');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    alert('Speech recognition requires Google Chrome on desktop. Please open this page in Chrome.');
     return;
   }
 
-  recognition                = new SpeechRecognition();
-  recognition.continuous     = false;   // FIX: single pass — no loop
-  recognition.interimResults = false;   // FIX: no interim — cleaner result
+  recognition                = new SR();
+  recognition.continuous     = true;   // keep listening until user stops
+  recognition.interimResults = true;   // show live transcript while speaking
   recognition.lang           = 'en-US';
+  recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
     isListening = true;
+    userTranscript = '';
     document.getElementById('micBtn').classList.add('listening');
-    document.getElementById('micLabel').textContent            = 'Listening...';
-    document.getElementById('answerStatus').textContent        = '🎤 Listening — speak clearly in English';
-    document.getElementById('transcriptBox').style.display     = 'block';
+    document.getElementById('micLabel').textContent         = 'Listening...';
+    document.getElementById('answerStatus').textContent     = '🎤 Listening — speak your answer in English';
+    document.getElementById('transcriptBox').style.display  = 'block';
+    document.getElementById('transcriptText').textContent   = '';
   };
 
   recognition.onresult = (event) => {
-    let final = '';
+    let interim = '';
+    let final   = '';
     for (let i = event.resultIndex; i < event.results.length; i++) {
-      if (event.results[i].isFinal) final += event.results[i][0].transcript;
+      const t = event.results[i][0].transcript;
+      if (event.results[i].isFinal) final += t + ' ';
+      else interim += t;
     }
-    if (final) {
-      userTranscript += final;
-      document.getElementById('transcriptText').textContent = userTranscript;
-    }
+    if (final) userTranscript += final;
+    // Show live: confirmed text + greyed interim
+    const box = document.getElementById('transcriptText');
+    box.innerHTML = userTranscript
+      + (interim ? `<span style="color:var(--text-muted);font-style:italic;">${interim}</span>` : '');
   };
 
   recognition.onerror = (event) => {
-    if (event.error !== 'no-speech') {
-      document.getElementById('answerStatus').textContent = '⚠️ Error: ' + event.error + '. Try again.';
-    }
+    if (event.error === 'no-speech') return; // ignore silence
+    document.getElementById('answerStatus').textContent = '⚠️ ' + event.error + ' — try again';
     stopListening();
   };
 
   recognition.onend = () => {
-    stopListening(); // FIX: always stop — no auto-restart loop
+    // Only stop if user manually stopped — otherwise restart for continuous listening
+    if (isListening) {
+      try { recognition.start(); }
+      catch(e) { stopListening(); }
+    }
   };
 
-  try { recognition.start(); } catch(e) { console.warn(e); }
+  try { recognition.start(); }
+  catch(e) { console.warn('SR start error:', e); }
 }
 
 function stopListening() {
   isListening = false;
-  if (recognition) { try { recognition.stop(); } catch(e){} }
+  if (recognition) {
+    recognition.onend = null; // prevent auto-restart
+    try { recognition.stop(); } catch(e){}
+    recognition = null;
+  }
   document.getElementById('micBtn').classList.remove('listening');
   document.getElementById('micLabel').textContent = 'Tap to speak';
 
-  if (userTranscript.trim().length > 3) {
-    scoreAnswer();
-  } else {
-    document.getElementById('answerStatus').textContent = 'No speech detected. Press the mic and try again.';
-  }
+  const text = userTranscript.trim();
+  if (text.length > 3) scoreAnswer();
+  else document.getElementById('answerStatus').textContent = 'Nothing detected. Press mic and try again.';
 }
 
 // ================================================================
 // SCORING ENGINE
+// Fix 3: if user answer is very different from model → pronunciation mode
 // ================================================================
 function scoreAnswer() {
   const q          = filteredQs[currentIndex];
@@ -284,32 +393,49 @@ function scoreAnswer() {
   const modelWords = tokenize(q.modelAnswer);
   const userWords  = tokenize(transcript);
 
+  // Check content overlap
   let matched = 0;
   modelWords.forEach(mw => {
     if (userWords.some(uw => fuzzyMatch(uw, mw))) matched++;
   });
-  const accuracy = Math.round((matched / modelWords.length) * 100);
+  const contentMatch = Math.round((matched / modelWords.length) * 100);
 
-  const coloredUser = userWords.map(uw => {
-    const exact = modelWords.some(mw => mw === uw);
-    const close = !exact && modelWords.some(mw => fuzzyMatch(uw, mw));
-    return { word: uw, color: exact ? 'green' : close ? 'yellow' : 'red' };
-  });
+  // If < 25% match — user answered freely → pronunciation mode only
+  const isFreeStyle = contentMatch < 25;
 
-  const kwMatched = q.keywords.filter(kw =>
-    userWords.some(uw => fuzzyMatch(uw, kw.toLowerCase()))
-  );
-  const kwScore    = Math.round((kwMatched.length / q.keywords.length) * 100);
-  const finalScore = Math.round(accuracy * 0.7 + kwScore * 0.3);
+  let finalScore, accuracy, kwMatched, coloredUser;
 
-  displayScore(finalScore, accuracy, kwMatched.length, q.keywords.length, coloredUser);
+  if (isFreeStyle) {
+    // Pronunciation mode: score based on word fluency and length
+    const wordCount   = userWords.length;
+    const modelCount  = modelWords.length;
+    const lengthScore = Math.min(100, Math.round((wordCount / modelCount) * 100));
+    finalScore        = Math.round(lengthScore * 0.6 + 40); // base 40 for attempting
+    accuracy          = lengthScore;
+    kwMatched         = 0;
+    coloredUser       = userWords.map(w => ({ word: w, color: 'yellow' })); // all yellow = neutral
+  } else {
+    // Content match mode
+    accuracy  = contentMatch;
+    const kwM = q.keywords.filter(kw => userWords.some(uw => fuzzyMatch(uw, kw.toLowerCase())));
+    kwMatched = kwM.length;
+    const kwScore  = Math.round((kwMatched / q.keywords.length) * 100);
+    finalScore     = Math.round(accuracy * 0.7 + kwScore * 0.3);
+    coloredUser    = userWords.map(uw => {
+      const exact = modelWords.some(mw => mw === uw);
+      const close = !exact && modelWords.some(mw => fuzzyMatch(uw, mw));
+      return { word: uw, color: exact ? 'green' : close ? 'yellow' : 'red' };
+    });
+  }
+
+  displayScore(finalScore, accuracy, kwMatched, q.keywords.length, coloredUser, isFreeStyle);
   saveScore(q.id, finalScore);
 
   if (currentMode === 'practice') {
     document.getElementById('retryBtn').style.display = 'inline-flex';
     document.getElementById('happyBtn').style.display = 'inline-flex';
   } else {
-    setTimeout(() => nextQuestion(), 4000);
+    setTimeout(() => nextQuestion(), 4500);
   }
 
   showEncouragement(ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)]);
@@ -326,19 +452,16 @@ function tokenize(str) {
 function fuzzyMatch(a, b) {
   if (a === b) return true;
   if (Math.abs(a.length - b.length) > 3) return false;
-  return levenshtein(a, b) <= 3; // FIX: tolerance 3 for non-native accents
+  return levenshtein(a, b) <= 3;
 }
 
 function levenshtein(a, b) {
   const m = a.length, n = b.length;
-  const dp = Array.from({length: m+1}, (_,i) =>
-    Array.from({length: n+1}, (_,j) => j === 0 ? i : 0)
-  );
-  for (let j = 1; j <= n; j++) dp[0][j] = j;
-  for (let i = 1; i <= m; i++)
-    for (let j = 1; j <= n; j++)
-      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1]
-        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  const dp = Array.from({length:m+1},(_,i) => Array.from({length:n+1},(_,j) => j===0?i:0));
+  for (let j=1;j<=n;j++) dp[0][j]=j;
+  for (let i=1;i<=m;i++)
+    for (let j=1;j<=n;j++)
+      dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
   return dp[m][n];
 }
 
@@ -347,33 +470,37 @@ const STOPWORDS = ['the','and','for','that','this','with','from','are','was','we
   'what','when','how','who','its','our','all','can','any','one','also','very','just','more',
   'make','than','about','into','each','some','then','there'];
 
-function displayScore(final, accuracy, kwMatched, kwTotal, coloredWords) {
-  const scoreCircle = document.getElementById('scoreCircle');
+function displayScore(final, accuracy, kwMatched, kwTotal, coloredWords, isFreeStyle) {
+  const circle = document.getElementById('scoreCircle');
   document.getElementById('scoreNum').textContent = final + '%';
-  scoreCircle.className = 'score-circle ' + (final >= 75 ? 'good' : final >= 50 ? 'ok' : 'poor');
+  circle.className = 'score-circle ' + (final >= 75 ? 'good' : final >= 50 ? 'ok' : 'poor');
   document.getElementById('scoreWrap').style.display = 'flex';
 
-  document.getElementById('scoreBreakdown').innerHTML = `
-    <div>Word coverage: <strong style="color:${accuracy>=75?'var(--green)':accuracy>=50?'var(--amber)':'var(--red)'};">${accuracy}%</strong></div>
-    <div>Keywords used: <strong style="color:var(--accent);">${kwMatched}/${kwTotal}</strong></div>
-    <div style="margin-top:6px;font-size:12px;">${getScoreMessage(final)}</div>
-  `;
+  document.getElementById('scoreBreakdown').innerHTML = isFreeStyle
+    ? `<div style="color:var(--accent);font-size:13px;">🎯 Free-style answer detected!<br>
+       Scored on fluency and length — not penalized for different wording.<br>
+       <strong style="color:var(--green);">Keep practicing with your own natural style!</strong></div>`
+    : `<div>Word coverage: <strong style="color:${accuracy>=75?'var(--green)':accuracy>=50?'var(--amber)':'var(--red)'};">${accuracy}%</strong></div>
+       <div>Keywords used: <strong style="color:var(--accent);">${kwMatched}/${kwTotal}</strong></div>
+       <div style="margin-top:6px;font-size:12px;">${getScoreMessage(final)}</div>`;
 
   const compText = document.getElementById('comparisonText');
   compText.innerHTML = '';
   coloredWords.forEach(({word, color}) => {
-    const span       = document.createElement('span');
+    const span = document.createElement('span');
     span.className   = 'w-' + color;
     span.textContent = word + ' ';
     compText.appendChild(span);
   });
   document.getElementById('comparisonWrap').style.display = 'block';
-  document.getElementById('answerStatus').textContent = 'Score calculated — see breakdown below';
+  document.getElementById('answerStatus').textContent = isFreeStyle
+    ? 'Free-style detected — scored on fluency'
+    : 'Score calculated — see breakdown below';
 }
 
 function getScoreMessage(score) {
   if (score >= 85) return '🏆 Excellent! You are interview-ready!';
-  if (score >= 70) return '✅ Great job! Practice a few more times to perfect it.';
+  if (score >= 70) return '✅ Great job! Practice a few more times.';
   if (score >= 50) return '📈 Good start! Focus on the highlighted keywords.';
   return '💪 Keep practicing! Review the model answer and try again.';
 }
@@ -385,27 +512,27 @@ function saveScore(qId, score) {
 }
 
 function updateProgressStats() {
-  const allScores = Object.values(sessionScores).flat();
-  const answered  = Object.keys(sessionScores).length;
-  const avg  = allScores.length ? Math.round(allScores.reduce((a,b)=>a+b,0)/allScores.length) : null;
-  const best = allScores.length ? Math.max(...allScores) : null;
-  const pct  = Math.round((answered / QUESTIONS.length) * 100);
-
-  document.getElementById('answeredCount').textContent        = answered;
-  document.getElementById('avgScore').textContent             = avg  !== null ? avg  + '%' : '—';
-  document.getElementById('bestScore').textContent            = best !== null ? best + '%' : '—';
-  document.getElementById('overallProgressFill').style.width  = pct + '%';
+  const all      = Object.values(sessionScores).flat();
+  const answered = Object.keys(sessionScores).length;
+  const avg      = all.length ? Math.round(all.reduce((a,b)=>a+b,0)/all.length) : null;
+  const best     = all.length ? Math.max(...all) : null;
+  const pct      = Math.round((answered / QUESTIONS.length) * 100);
+  document.getElementById('answeredCount').textContent       = answered;
+  document.getElementById('avgScore').textContent            = avg  !== null ? avg  + '%' : '—';
+  document.getElementById('bestScore').textContent           = best !== null ? best + '%' : '—';
+  document.getElementById('overallProgressFill').style.width = pct + '%';
 }
 
 function retryQuestion() {
   userTranscript = '';
-  document.getElementById('transcriptBox').style.display   = 'none';
-  document.getElementById('transcriptText').textContent    = '';
-  document.getElementById('scoreWrap').style.display       = 'none';
-  document.getElementById('comparisonWrap').style.display  = 'none';
-  document.getElementById('retryBtn').style.display        = 'none';
-  document.getElementById('happyBtn').style.display        = 'none';
-  document.getElementById('answerStatus').textContent      = 'Press the microphone and speak your answer in English';
+  ['transcriptBox','scoreWrap','comparisonWrap'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('transcriptText').textContent = '';
+  document.getElementById('retryBtn').style.display     = 'none';
+  document.getElementById('happyBtn').style.display     = 'none';
+  document.getElementById('answerStatus').textContent   = 'Press the microphone and speak your answer in English';
   const enc = document.querySelector('.encouragement');
   if (enc) enc.remove();
 }
@@ -420,33 +547,39 @@ function showEncouragement(msg) {
 }
 
 // ================================================================
-// TEXT TO SPEECH — question, model answer, follow-up
+// TEXT TO SPEECH
+// Primary: Web Speech API (Chrome — best quality)
+// Fallback: ResponsiveVoice (all browsers + mobile)
 // ================================================================
-let voices = [];
-
 function loadVoices() {
   voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
   const sel = document.getElementById('voiceSelect');
   if (!sel) return;
   sel.innerHTML = '';
-  const engVoices = voices.filter(v => v.lang.startsWith('en'));
-  if (!engVoices.length) { sel.innerHTML = '<option>No voices found</option>'; return; }
-
+  const eng = voices.filter(v => v.lang.startsWith('en'));
+  if (!eng.length) {
+    sel.innerHTML = '<option value="rv">ResponsiveVoice (fallback)</option>';
+    return;
+  }
   const preferred = ['Google UK English Male','Daniel','Google US English','Samantha','Alex'];
-  engVoices.sort((a,b) => {
+  eng.sort((a,b) => {
     let ai = preferred.findIndex(p => a.name.includes(p.split(' ')[0]));
     let bi = preferred.findIndex(p => b.name.includes(p.split(' ')[0]));
     if (ai<0) ai=999; if (bi<0) bi=999;
-    return ai - bi;
+    return ai-bi;
   });
-  engVoices.forEach(v => {
-    const opt       = document.createElement('option');
-    opt.value       = v.name;
-    opt.textContent = v.name;
-    sel.appendChild(opt);
+  eng.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.name; o.textContent = v.name;
+    sel.appendChild(o);
   });
+  // Add RV as last option
+  const rv = document.createElement('option');
+  rv.value = 'rv'; rv.textContent = '📱 ResponsiveVoice (mobile/other)';
+  sel.appendChild(rv);
+
   const saved = localStorage.getItem('cia_voice');
-  if (saved && engVoices.find(v => v.name === saved)) sel.value = saved;
+  if (saved && (saved === 'rv' || eng.find(v => v.name === saved))) sel.value = saved;
   sel.addEventListener('change', () => localStorage.setItem('cia_voice', sel.value));
 }
 
@@ -463,36 +596,80 @@ function setupRateSlider() {
   });
 }
 
-// Unified speak function — question / model answer / follow-up
-function speakText(type) {
-  if (!window.speechSynthesis) return;
-  if (isListening) stopListening(); // CRITICAL: stop mic before speaking
-  speechSynthesis.cancel();
+function stopSpeaking() {
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  if (typeof responsiveVoice !== 'undefined') responsiveVoice.cancel();
+}
 
-  const q = filteredQs[currentIndex];
-  const map = {
-    question: { text: q.question,                              btnId: 'listenBtn'       },
-    answer:   { text: q.modelAnswer,                           btnId: 'listenAnswerBtn' },
-    followup: { text: q.followUp + '. ' + q.followUpAnswer,   btnId: 'listenFollowBtn' }
-  };
-  const item = map[type];
-  if (!item || !item.text) return;
+function getSelectedVoice() {
+  const sel = document.getElementById('voiceSelect');
+  return sel ? sel.value : null;
+}
 
-  const utt   = new SpeechSynthesisUtterance(item.text);
-  const sel   = document.getElementById('voiceSelect');
-  const voice = voices.find(v => v.name === sel?.value);
-  if (voice) utt.voice = voice;
-  utt.rate  = parseFloat(document.getElementById('rateSlider')?.value || '1.0');
-  utt.pitch = 1.0;
+function getSelectedRate() {
+  return parseFloat(document.getElementById('rateSlider')?.value || '1.0');
+}
 
-  const btn = document.getElementById(item.btnId);
-  if (btn) {
-    const original = btn.textContent;
-    btn.textContent = '🔊 Speaking...';
-    btn.classList.add('speaking');
-    utt.onend = () => { btn.textContent = original; btn.classList.remove('speaking'); };
+function speakTextWithBtn(text, btn, originalLabel) {
+  if (!text) return;
+  if (isListening) stopListening(); // prevent mic capturing TTS
+  stopSpeaking();
+
+  const voiceName = getSelectedVoice();
+  const rate      = getSelectedRate();
+
+  if (btn) { btn.textContent = '🔊 Speaking...'; btn.classList.add('speaking'); }
+  const done = () => { if (btn) { btn.textContent = originalLabel; btn.classList.remove('speaking'); } };
+
+  // Use ResponsiveVoice if selected OR if no Web Speech voices available
+  const useRV = voiceName === 'rv' || !voices.filter(v => v.lang.startsWith('en')).length;
+
+  if (useRV && typeof responsiveVoice !== 'undefined') {
+    responsiveVoice.speak(text, 'UK English Male', { rate, onend: done });
+  } else if (window.speechSynthesis) {
+    const utt   = new SpeechSynthesisUtterance(text);
+    const voice = voices.find(v => v.name === voiceName);
+    if (voice) utt.voice = voice;
+    utt.rate  = rate;
+    utt.pitch = 1.0;
+    utt.onend = done;
+    speechSynthesis.speak(utt);
+  } else {
+    done();
   }
-  speechSynthesis.speak(utt);
+}
+
+// Individual speak functions called from HTML buttons
+function speakQuestion() {
+  const q   = filteredQs[currentIndex];
+  const btn = document.getElementById('listenBtn');
+  speakTextWithBtn(q.question, btn, '🔊 Question');
+}
+
+function speakAnswer() {
+  const box = document.getElementById('modelAnswerBox');
+  const cur = box?.dataset?.current || 'professional';
+  const text = box?.dataset?.[cur] || '';
+  const btn  = document.getElementById('listenAnswerBtn');
+  speakTextWithBtn(text, btn, '🔊 Answer');
+}
+
+function speakFollowUp() {
+  const q    = filteredQs[currentIndex];
+  const text = q.followUp;
+  const btn  = document.getElementById('listenFollowBtn');
+  speakTextWithBtn(text, btn, '🔊 Follow-up');
+}
+
+function speakFollowUpAnswer() {
+  const q    = filteredQs[currentIndex];
+  const text = q.followUpAnswer;
+  const btn  = document.getElementById('listenFollowAnsBtn');
+  speakTextWithBtn(text, btn, '🔊 Answer');
+}
+
+function speakVariation() {
+  speakAnswer(); // same — reads current selected variation
 }
 
 // ================================================================
@@ -500,18 +677,12 @@ function speakText(type) {
 // ================================================================
 function handlePdfDownload() {
   if (!isPremium) { openPremiumModal(); return; }
-  generatePDF();
-}
-
-function generatePDF() {
   if (!window.jspdf) {
-    const script  = document.createElement('script');
-    script.src    = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = () => buildPDF();
-    document.head.appendChild(script);
-  } else {
-    buildPDF();
-  }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = buildPDF;
+    document.head.appendChild(s);
+  } else buildPDF();
 }
 
 function buildPDF() {
@@ -520,57 +691,52 @@ function buildPDF() {
   const W = 210, mar = 18;
   let y = 20;
 
-  const addLine = (text, size, bold, color) => {
+  const line = (text, size, bold, color) => {
     doc.setFontSize(size);
     doc.setFont('helvetica', bold ? 'bold' : 'normal');
-    doc.setTextColor(...(color || [30,30,30]));
-    doc.splitTextToSize(text, W - mar*2).forEach(line => {
+    doc.setTextColor(...(color||[30,30,30]));
+    doc.splitTextToSize(text, W-mar*2).forEach(l => {
       if (y > 275) { doc.addPage(); y = 20; }
-      doc.text(line, mar, y);
+      doc.text(l, mar, y);
       y += size * 0.45;
     });
     y += 2;
   };
 
-  doc.setFillColor(11,60,93);
-  doc.rect(0, 0, W, 28, 'F');
+  doc.setFillColor(11,60,93); doc.rect(0,0,W,28,'F');
   doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255);
   doc.text('CruiseInterviewAcademy', mar, 13);
   doc.setFontSize(10); doc.setFont('helvetica','normal');
-  doc.text('120 Real Cruise Interview Questions — Key Answers & Keywords', mar, 21);
+  doc.text('120 Real Cruise Interview Questions — Premium Edition', mar, 21);
   y = 36;
 
-  const depts     = ['general','entertainment','food','housekeeping','guestservices'];
-  const deptNames = { general:'General', entertainment:'Entertainment', food:'Food & Beverage', housekeeping:'Housekeeping', guestservices:'Guest Services' };
-
-  depts.forEach(dept => {
+  ['general','entertainment','food','housekeeping','guestservices'].forEach(dept => {
     const qs = QUESTIONS.filter(q => q.dept === dept);
     if (!qs.length) return;
     if (y > 250) { doc.addPage(); y = 20; }
     doc.setFillColor(238,248,255);
     doc.rect(mar-2, y-5, W-mar*2+4, 10, 'F');
-    addLine('▶ ' + deptNames[dept], 13, true, [11,60,93]);
+    const names = {general:'General',entertainment:'Entertainment',food:'Food & Beverage',housekeeping:'Housekeeping',guestservices:'Guest Services'};
+    line('▶ ' + names[dept], 13, true, [11,60,93]);
     y += 3;
     qs.forEach(q => {
       if (y > 265) { doc.addPage(); y = 20; }
-      addLine(`Q${q.id}. ${q.question}`,           11,   true,  [20,20,20]);
-      addLine('Answer: '    + q.modelAnswer,        9,    false, [60,60,60]);
-      addLine('Keywords: '  + q.keywords.join(' · '), 8.5, false, [15,120,80]);
-      addLine('Follow-up: ' + q.followUp,           8.5,  true,  [80,50,140]);
-      addLine(q.followUpAnswer,                      8.5,  false, [100,100,100]);
-      addLine('Tip: '       + q.tip,                8.5,  false, [160,110,10]);
+      line(`Q${q.id}. ${q.question}`, 11, true, [20,20,20]);
+      line('Answer: ' + q.modelAnswer, 9, false, [60,60,60]);
+      line('Keywords: ' + q.keywords.join(' · '), 8.5, false, [15,120,80]);
+      line('Follow-up: ' + q.followUp, 8.5, true, [80,50,140]);
+      line(q.followUpAnswer, 8.5, false, [100,100,100]);
+      line('Tip: ' + q.tip, 8.5, false, [160,110,10]);
       y += 4;
-      doc.setDrawColor(220,230,240);
-      doc.line(mar, y, W-mar, y);
-      y += 5;
+      doc.setDrawColor(220,230,240); doc.line(mar,y,W-mar,y); y += 5;
     });
   });
 
   const total = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= total; i++) {
+  for (let i=1;i<=total;i++) {
     doc.setPage(i);
     doc.setFontSize(8); doc.setTextColor(150,150,150);
-    doc.text(`CruiseInterviewAcademy.com  ·  Page ${i} of ${total}  ·  Premium Content`, mar, 292);
+    doc.text(`CruiseInterviewAcademy.com · Page ${i} of ${total} · Premium — Do not distribute`, mar, 292);
   }
   doc.save('CruiseInterviewAcademy_120Questions.pdf');
 }
