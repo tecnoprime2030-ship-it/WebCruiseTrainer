@@ -138,6 +138,11 @@ function prevQuestion() { loadQuestion(currentIndex - 1); }
 function resetAnswerUI() {
   userTranscript = '';
   isListening    = false;
+  if (recognition) {
+    recognition.onend = null;
+    try { recognition.stop(); } catch(e){}
+    recognition = null;
+  }
   stopSpeaking();
   const micBtn = document.getElementById('micBtn');
   if (micBtn) {
@@ -319,65 +324,73 @@ function startListening() {
     return;
   }
 
-  recognition                = new SR();
-  recognition.continuous     = true;   // keep listening until user stops
-  recognition.interimResults = true;   // show live transcript while speaking
-  recognition.lang           = 'en-US';
+  recognition                 = new SR();
+  recognition.continuous      = false;  // single pass — no loop
+  recognition.interimResults  = true;   // live display while speaking
+  recognition.lang            = 'en-US';
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
     isListening = true;
-    userTranscript = '';
     document.getElementById('micBtn').classList.add('listening');
-    document.getElementById('micLabel').textContent         = 'Listening...';
-    document.getElementById('answerStatus').textContent     = '🎤 Listening — speak your answer in English';
-    document.getElementById('transcriptBox').style.display  = 'block';
-    document.getElementById('transcriptText').textContent   = '';
+    document.getElementById('micLabel').textContent        = 'Listening...';
+    document.getElementById('answerStatus').textContent    = '🎤 Listening — speak your answer in English';
+    document.getElementById('transcriptBox').style.display = 'block';
   };
 
   recognition.onresult = (event) => {
     let interim = '';
-    let final   = '';
+    let finalChunk = '';
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const t = event.results[i][0].transcript;
-      if (event.results[i].isFinal) final += t + ' ';
+      if (event.results[i].isFinal) finalChunk += t + ' ';
       else interim += t;
     }
-    if (final) userTranscript += final;
-    // Show live: confirmed text + greyed interim
+    if (finalChunk) userTranscript += finalChunk;
     const box = document.getElementById('transcriptText');
     box.innerHTML = userTranscript
-      + (interim ? `<span style="color:var(--text-muted);font-style:italic;">${interim}</span>` : '');
+      + (interim
+        ? '<span style="color:var(--text-muted);font-style:italic;">' + interim + '</span>'
+        : '');
   };
 
   recognition.onerror = (event) => {
-    if (event.error === 'no-speech') return; // ignore silence
+    if (event.error === 'no-speech') return;
     document.getElementById('answerStatus').textContent = '⚠️ ' + event.error + ' — try again';
-    stopListening();
+    finishListening();
   };
 
   recognition.onend = () => {
-    // Only stop if user manually stopped — otherwise restart for continuous listening
-    if (isListening) {
-      try { recognition.start(); }
-      catch(e) { stopListening(); }
-    }
+    finishListening(); // always stop — never auto-restart
   };
 
   try { recognition.start(); }
   catch(e) { console.warn('SR start error:', e); }
 }
 
+// Called by user pressing mic button — stops recognition, then scores
 function stopListening() {
+  if (!isListening) return;
   isListening = false;
   if (recognition) {
-    recognition.onend = null; // prevent auto-restart
+    recognition.onend = null; // detach to prevent finishListening double-call
     try { recognition.stop(); } catch(e){}
     recognition = null;
   }
+  _afterListening();
+}
+
+// Called internally by recognition.onend / onerror — recognition already stopped
+function finishListening() {
+  if (!isListening) return; // already handled
+  isListening = false;
+  recognition = null;
+  _afterListening();
+}
+
+function _afterListening() {
   document.getElementById('micBtn').classList.remove('listening');
   document.getElementById('micLabel').textContent = 'Tap to speak';
-
   const text = userTranscript.trim();
   if (text.length > 3) scoreAnswer();
   else document.getElementById('answerStatus').textContent = 'Nothing detected. Press mic and try again.';
