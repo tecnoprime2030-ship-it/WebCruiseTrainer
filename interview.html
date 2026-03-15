@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="interview.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=PpGpKCiB"></script>
 </head>
 <body>
 
@@ -143,17 +144,9 @@
     <div class="q-text" id="qText">Loading question...</div>
 
     <!-- Listen button -->
-    <div class="listen-group">
-      <button class="listen-btn" onclick="speakText('question')" id="listenBtn">
-        🔊 Question
-      </button>
-      <button class="listen-btn listen-btn-answer" onclick="speakText('answer')" id="listenAnswerBtn">
-        🔊 Model Answer
-      </button>
-      <button class="listen-btn listen-btn-followup" onclick="speakText('followup')" id="listenFollowBtn">
-        🔊 Follow-up
-      </button>
-    </div>
+    <button class="listen-btn" onclick="speakQuestion()" id="listenBtn">
+      🔊 Listen to question
+    </button>
   </div>
 
   <!-- PRACTICE MODE UI -->
@@ -216,24 +209,42 @@
 
       <div class="model-answer-content" id="modelAnswerContent" style="display:none">
 
-        <div class="model-answer-box" id="modelAnswerBox">
-          <!-- filled by JS -->
+        <div class="section-block block-answer">
+          <div class="block-header">
+            <span class="block-icon">💬</span>
+            <span class="block-title">Model Answer</span>
+            <button class="listen-btn listen-btn-answer" onclick="speakAnswer()" id="listenAnswerBtn">🔊 Listen</button>
+          </div>
+          <div class="model-answer-box" id="modelAnswerBox"></div>
         </div>
 
-        <div class="keywords-box">
-          <div class="kw-label">🔑 Key words to use:</div>
+        <div class="section-block block-keywords">
+          <div class="block-header">
+            <span class="block-icon">🔑</span>
+            <span class="block-title">Key words to use</span>
+          </div>
           <div class="kw-chips" id="kwChips"></div>
         </div>
 
-        <div class="followup-box" id="followupBox">
-          <div class="fu-label">🔄 Likely follow-up question:</div>
+        <div class="section-block block-followup">
+          <div class="block-header">
+            <span class="block-icon">🔄</span>
+            <span class="block-title">Follow-up question</span>
+            <button class="listen-btn listen-btn-followup" onclick="speakFollowUp()" id="listenFollowBtn">🔊 Listen</button>
+          </div>
           <div class="fu-question" id="fuQuestion"></div>
+          <div class="fu-answer-wrap" style="margin-top:10px;">
+            <button class="fu-toggle" onclick="toggleFollowUp()">Show answer</button>
+            <button class="listen-btn listen-btn-followup" onclick="speakFollowUpAnswer()" id="listenFollowAnsBtn" style="display:none">🔊 Answer</button>
+          </div>
           <div class="fu-answer" id="fuAnswer" style="display:none"></div>
-          <button class="fu-toggle" onclick="toggleFollowUp()">Show follow-up answer</button>
         </div>
 
-        <div class="tip-box" id="tipBox">
-          <div class="tip-label">💡 Recruiter tip:</div>
+        <div class="section-block block-tip">
+          <div class="block-header">
+            <span class="block-icon">💡</span>
+            <span class="block-title">Recruiter tip</span>
+          </div>
           <div class="tip-text" id="tipText"></div>
         </div>
 
