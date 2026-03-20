@@ -117,9 +117,11 @@ document.addEventListener('DOMContentLoaded', function () {
 // QUESTION MANAGEMENT
 // ================================================================
 function buildFilteredList() {
+  // Merge base questions + targeted role questions
+  const allQs = [...QUESTIONS, ...(typeof QUESTIONS_TARGETED !== 'undefined' ? QUESTIONS_TARGETED : [])];
   filteredQs = currentDept === 'all'
-    ? [...QUESTIONS]
-    : QUESTIONS.filter(q => q.dept === currentDept);
+    ? allQs
+    : allQs.filter(q => q.dept === currentDept);
   document.getElementById('qTotal').textContent = filteredQs.length;
 }
 
