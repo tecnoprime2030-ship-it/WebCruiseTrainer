@@ -9,7 +9,7 @@
    6. Visual improvements via CSS classes
    ============================================== */
 
-const FREE_LIMIT  = 4;
+const FREE_LIMIT  = 0; // disabled
 let currentMode   = 'practice';
 let currentDept   = 'all';
 let currentIndex  = 0;
@@ -145,7 +145,7 @@ function loadQuestion(idx) {
   document.getElementById('qDeptBadge').textContent = q.deptLabel;
 
   resetAnswerUI();
-  renderModelAnswer(q, !isPremium && q.id > FREE_LIMIT);
+  renderModelAnswer(q, false); // all unlocked
   clearSimTimer();
   if (currentMode === 'simulation') startSimTimer();
 }
@@ -277,7 +277,7 @@ function toggleModelAnswer() {
   const content  = document.getElementById('modelAnswerContent');
   const btn      = document.getElementById('toggleAnswerBtn');
   const q        = filteredQs[currentIndex];
-  if (!isPremium && q.id > FREE_LIMIT) { openPremiumModal(); return; }
+  // premium check disabled
   const showing  = content.style.display !== 'none';
   content.style.display = showing ? 'none' : 'block';
   btn.textContent       = showing ? '👁 Show Model Answer' : '👁 Hide Model Answer';
