@@ -902,3 +902,16 @@ body { background: #061220 !important; }
   border: none;
 }
 .btn-score:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(16,185,129,0.3); }
+
+/* Targeted role filter buttons — distinct color */
+.dept-btn-target {
+  background: rgba(245,158,11,0.1) !important;
+  border-color: rgba(245,158,11,0.3) !important;
+  color: var(--amber-light) !important;
+}
+.dept-btn-target.active,
+.dept-btn-target:hover {
+  background: rgba(245,158,11,0.2) !important;
+  border-color: var(--amber) !important;
+  color: var(--amber-light) !important;
+}
