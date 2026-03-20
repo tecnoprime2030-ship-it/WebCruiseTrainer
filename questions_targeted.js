@@ -1,0 +1,338 @@
+/* ==============================================
+   CruiseInterviewAcademy — questions_targeted.js
+   Targeted questions for specific roles:
+   - Entertainment Host / Cruise Staff (30)
+   - Youth Staff / Youth Counselor (25)
+   - Deck Steward / Pool Attendant (25)
+   Based on real Royal Caribbean, MSC, NCL,
+   Norwegian job postings and requirements
+   ============================================== */
+
+const QUESTIONS_TARGETED = [
+
+  /* ===== ENTERTAINMENT HOST / CRUISE STAFF (30) ===== */
+  /* Keywords from real RCL/MSC job postings:
+     master of ceremonies, motivate, entertain, recreational programs,
+     large groups, public venue, microphone, stage presence, socialize,
+     unforgettable guest experience, crowd engagement, activity hosting */
+
+  { id:201, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"Describe your experience as a master of ceremonies or hosting large groups.",
+    modelAnswer:"I have two years of experience as a master of ceremonies hosting events for audiences of up to 300 people including corporate events, themed parties and recreational programs at a resort. I am comfortable holding a microphone, commanding a stage, and keeping large groups engaged and entertained throughout the event.",
+    keywords:["master of ceremonies","large groups","microphone","stage","recreational programs","resort","entertained","commanding"],
+    followUp:"What is the largest group you have hosted and how did you manage the energy?",
+    followUpAnswer:"I hosted a group of 300 guests at a themed gala. I kept energy high by breaking the event into short fast-paced segments, using audience participation moments every 10 minutes and building toward an exciting finale.",
+    tip:"Royal Caribbean requires minimum 2 years MC or professional entertainment experience. Be specific about group size and venue type."
+  },
+  { id:202, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you motivate and entertain guests who seem uninterested or disengaged?",
+    modelAnswer:"I first read the room to understand what is causing the disengagement. Then I shift my energy higher, introduce a spontaneous audience participation moment, or use humor to break the ice. I have learned that one engaged volunteer on stage can change the entire atmosphere of a group within minutes.",
+    keywords:["read the room","energy","audience participation","humor","volunteer","atmosphere","engaged","shift"],
+    followUp:"Give me a specific technique you use to re-engage a quiet crowd.",
+    followUpAnswer:"I use what I call a 'standing challenge' — I ask everyone to stand up for a quick 30-second physical challenge. The movement alone resets the group's energy and breaks the passive sitting mindset.",
+    tip:"Recruiters test this heavily. Have 3 specific crowd re-engagement techniques ready with examples."
+  },
+  { id:203, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you socialize with guests in public areas as part of your daily role?",
+    modelAnswer:"I approach socializing with guests as one of the most important parts of my job, not just an add-on. I proactively engage guests in lounges, pool decks and corridors — introducing myself, asking about their cruise experience, recommending activities and making them feel genuinely seen and welcome. Royal Caribbean's philosophy is that every public area interaction is an opportunity to create an unforgettable guest vacation.",
+    keywords:["socialize","proactively","public areas","pool deck","introduce","recommend","unforgettable","guest vacation","interactions"],
+    followUp:"How do you approach socializing with shy or introverted guests who do not want to engage?",
+    followUpAnswer:"I respect their preference immediately and keep the interaction brief and low-pressure. I might mention an upcoming quiet activity they could enjoy and leave the door open without pushing. The goal is always comfort, not participation numbers.",
+    tip:"RCL job description specifically states 'socializes with guests in public areas at all times.' Show you understand this is a core duty, not optional."
+  },
+  { id:204, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"What recreational and entertainment programs have you hosted or managed?",
+    modelAnswer:"I have hosted and managed a wide range of recreational and entertainment programs including trivia competitions, bingo sessions, karaoke nights, pool deck parties, game shows, dance competitions and themed evening events. I also have experience running sports tournaments and fitness challenges on deck. I enjoy designing new activities from scratch when the standard program needs fresh energy.",
+    keywords:["recreational programs","trivia","bingo","karaoke","pool deck","game shows","sports tournaments","designing","fresh energy"],
+    followUp:"Which type of program gets the strongest guest response in your experience?",
+    followUpAnswer:"Audience participation game shows consistently get the strongest response because guests become the stars of the show rather than passive spectators.",
+    tip:"List specific program types — generic answers like 'various activities' are weak. Recruiters want to know exactly what you can run independently."
+  },
+  { id:205, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you use a microphone professionally to command attention in a large venue?",
+    modelAnswer:"I treat the microphone as an instrument, not just an amplifier. I modulate my voice — varying pace, tone and volume deliberately to create emotional effect. I hold the mic consistently at the right distance, never fumble with it on stage, and I practice my opening lines until they are completely natural. Strong mic technique signals professionalism and immediately establishes credibility with any audience.",
+    keywords:["microphone","modulate","pace","tone","volume","professionalism","credibility","opening lines","natural","command"],
+    followUp:"What do you do if your microphone fails during a live event?",
+    followUpAnswer:"I stay completely calm and project my voice naturally. I signal to technical staff with a clear hand gesture, keep the audience engaged with a physical activity or humor while the issue is resolved, and never let the technical problem become the story of the event.",
+    tip:"Mic technique is tested in cruise entertainment auditions. Show you have deliberate mic habits, not just 'I've used one before.'"
+  },
+  { id:206, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"Describe your experience with theatrical performance, music or dance.",
+    modelAnswer:"I have a background in musical theater and have performed in stage productions for audiences of up to 500 people. I have experience with scripted and improvised performance, costume work and character roles. I can lead group dances, teach choreography to large groups quickly, and I am comfortable performing across multiple entertainment disciplines which makes me flexible for any onboard entertainment need.",
+    keywords:["musical theater","stage productions","scripted","improvised","costume","character roles","choreography","flexible","entertainment disciplines"],
+    followUp:"Can you perform in character roles or costumes comfortably?",
+    followUpAnswer:"Absolutely. I have performed in full costume and character roles for audiences of all ages. I understand that staying in character, regardless of what is happening around me, is essential to creating a complete guest experience.",
+    tip:"NCL and RCL both require comfort with costumes and character roles for entertainment and youth staff. Mention this explicitly."
+  },
+  { id:207, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you create an unforgettable guest vacation experience through entertainment?",
+    modelAnswer:"An unforgettable vacation experience comes from making guests feel like the entertainment was created specifically for them. I pay attention to the demographic on each sailing, personalize interaction where possible, create genuine moments of spontaneous joy that cannot be scripted, and follow up with guests throughout the cruise to reinforce the connection we built during activities.",
+    keywords:["unforgettable","personalize","demographic","spontaneous joy","scripted","connection","follow up","guest vacation"],
+    followUp:"How do you make a repeat guest who has seen your shows many times still feel engaged?",
+    followUpAnswer:"I always have fresh content ready, I ask repeat guests for input or ideas, and I acknowledge their loyalty publicly during events in a way that makes them feel valued and special.",
+    tip:"'Unforgettable guest vacation' is the exact language used in RCL job postings. Using it shows you understand their brand values."
+  },
+  { id:208, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you adapt your entertainment style for different cultural backgrounds onboard?",
+    modelAnswer:"I research the nationality mix of each sailing in advance and adjust my references, humor style and game formats accordingly. I avoid culture-specific jokes that could exclude guests, use universal physical humor and participation activities that transcend language barriers, and always acknowledge multiple cultures during events to make every guest feel represented and included.",
+    keywords:["nationality mix","adjust","culture-specific","universal","language barriers","acknowledge","represented","included","humor style"],
+    followUp:"What do you do when a language barrier prevents a guest from participating?",
+    followUpAnswer:"I use clear visual demonstrations, body language and simple English instructions. I also pair them with a team member or fellow guest who shares their language when possible.",
+    tip:"Cruise ships have multinational guest populations. Cultural adaptability is a major differentiator for entertainment hosts."
+  },
+  { id:209, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you handle coordinating with the technical team for a live event?",
+    modelAnswer:"I always conduct a full technical briefing with the AV and lighting team before any major event. We review cue sheets, test all equipment, agree on communication signals during the show, and establish a contingency plan for technical failures. Clear pre-event coordination prevents 90% of technical problems from ever reaching the audience.",
+    keywords:["technical briefing","AV","lighting","cue sheets","test equipment","communication signals","contingency plan","technical failures","audience"],
+    followUp:"What information do you always give the technical team before your events?",
+    followUpAnswer:"Show rundown with exact timings, music cues and titles, lighting mood requests per segment, microphone requirements, and the emergency contact protocol if something fails mid-show.",
+    tip:"Entertainment coordinators manage technical staff. Show organizational thinking, not just performance skills."
+  },
+  { id:210, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"Why do you want to work specifically in cruise ship entertainment rather than land-based venues?",
+    modelAnswer:"The cruise environment offers a unique combination of performance opportunity, multicultural audience diversity and the ability to create genuinely memorable experiences for guests who are on vacation and fully open to participation. Land-based entertainment often involves the same local audience repeatedly. On a cruise ship, every sailing brings an entirely new group of guests, which keeps my performance skills sharp and my creativity continuously challenged.",
+    keywords:["multicultural","memorable experiences","vacation","participation","new group","performance skills","creativity","challenged","diverse audience"],
+    followUp:"Are you aware of the demanding schedule and long contracts in cruise entertainment?",
+    followUpAnswer:"Yes, I understand that contracts are typically 6 to 8 months with daily performance schedules, long hours and limited personal time. I am fully committed to this lifestyle and I see the professional development opportunity it provides as worth every challenge.",
+    tip:"Show you have researched the reality of cruise entertainment work, not just the glamour."
+  },
+  { id:211, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you manage your performance energy across multiple shows in one day?",
+    modelAnswer:"I treat energy management as a professional skill. I pace myself between events with intentional rest, proper hydration and mental preparation rituals. I give 100% in every performance but I am strategic about what I do in between. I never let a tired shift show to the audience because guests on vacation deserve my absolute best regardless of how many hours I have already worked.",
+    keywords:["energy management","pace","hydration","mental preparation","100%","tired shift","guests deserve","absolute best","professional"],
+    followUp:"What is your personal pre-performance ritual that gets you in the right mindset?",
+    followUpAnswer:"I do a brief physical warm-up, review my opening two minutes, take three deep breaths backstage, and remind myself that the guests in front of me are there to have the time of their lives.",
+    tip:"Multiple shows per day is standard in cruise entertainment. Show you have thought about sustainable performance habits."
+  },
+  { id:212, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you handle a guest who disrupts a show or activity?",
+    modelAnswer:"I use humor and warmth to redirect them rather than confrontation. I might give them a specific role within the activity that channels their energy productively, or briefly acknowledge their behavior with a light joke that the crowd enjoys without embarrassing anyone. If the disruption continues and affects other guests I speak with them privately during a break and involve security only as a last resort.",
+    keywords:["humor","warmth","redirect","specific role","light joke","privately","security","last resort","affects other guests"],
+    followUp:"What if the disruptive guest is visibly intoxicated?",
+    followUpAnswer:"I would not engage in confrontation. I would signal to bar staff or security immediately and continue the activity with the rest of the group while the situation is managed by the appropriate team.",
+    tip:"Intoxicated guest scenarios are common in cruise entertainment. Always show you know when to involve other departments."
+  },
+  { id:213, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"What makes a great bingo host different from just calling numbers?",
+    modelAnswer:"A great bingo host turns a simple game into a full entertainment experience. The difference is in the energy, the callbacks, the running jokes built up throughout the session, the way each winner is celebrated, and the sense of genuine excitement you create between every number called. Guests should leave feeling they had a show, not just played a game.",
+    keywords:["entertainment experience","callbacks","running jokes","winner celebrated","excitement","energy","show","game"],
+    followUp:"How do you keep experienced bingo players engaged while also explaining the rules to first-timers?",
+    followUpAnswer:"I deliver the rules in an entertaining format that experienced players can enjoy as a performance while new players absorb the information. Using humor to explain rules is far more effective than reading them from a sheet.",
+    tip:"Bingo is one of the most frequently hosted activities on cruise ships. Show specific hosting personality beyond just mechanics."
+  },
+  { id:214, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How do you create audience participation in a reluctant group?",
+    modelAnswer:"I start with very low-commitment participation — a simple show of hands, a call and response, something that requires no bravery. Then I build gradually toward physical participation. By the time I invite volunteers on stage the group has already participated several times and the psychological barrier is much lower. I never put someone on the spot without giving them a genuinely easy way to say no.",
+    keywords:["low-commitment","show of hands","call and response","build gradually","volunteers","psychological barrier","easy way to say no","reluctant"],
+    followUp:"What is your absolute lowest-risk way to get the first volunteer on stage?",
+    followUpAnswer:"I pre-identify an enthusiastic guest before the show starts — someone I spoke to earlier who seemed open and social — and invite them first knowing they will say yes. That first yes changes the energy of the whole room.",
+    tip:"Pre-identifying willing participants is a professional MC technique. It shows you prepare even for spontaneous-seeming moments."
+  },
+  { id:215, dept:"entertainment_host", deptLabel:"Entertainment Host",
+    question:"How important is your personal appearance and grooming as an entertainment host?",
+    modelAnswer:"Personal appearance is a direct reflection of the ship's brand and standards. As an entertainment host I am one of the most visible crew members onboard and guests associate my appearance with the quality of their entire vacation experience. I maintain impeccable grooming standards at all times in public areas, understand that I represent the company even during casual interactions, and take pride in presenting myself professionally in every circumstance.",
+    keywords:["brand","standards","visible","grooming","impeccable","represent the company","professional","quality","vacation experience"],
+    followUp:"How do you maintain your appearance standard during a 14-hour working day?",
+    followUpAnswer:"I plan ahead — keeping a small grooming kit accessible for quick freshening between events, and I build wardrobe changes into my daily schedule when required for different event types.",
+    tip:"Appearance standards are mentioned in virtually every cruise entertainment job description. Show you take this seriously."
+  },
+
+  /* ===== YOUTH STAFF / YOUTH COUNSELOR (25) ===== */
+  /* Keywords from NCL, RCL, MSC job postings:
+     youth program, ages 2-17, recreational activities, theatrical drama,
+     safety supervision, microphone, host/hostess, special needs,
+     parental communication, child safeguarding, creative programming */
+
+  { id:231, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"Why do you want to work with children and teenagers on a cruise ship?",
+    modelAnswer:"I am passionate about creating safe, fun and developmentally meaningful experiences for young guests. Working with children aged 2 to 17 on a cruise ship allows me to deliver high-quality recreational and theatrical programming that many of these children will remember for their entire lives. I genuinely believe that positive early experiences with group activities build confidence and social skills that benefit children long after the vacation ends.",
+    keywords:["passionate","safe","fun","developmentally","ages 2 to 17","recreational","theatrical","confidence","social skills","positive experiences"],
+    followUp:"How do you separate your genuine passion for working with children from just enjoying the cruise lifestyle?",
+    followUpAnswer:"My background is in youth education and recreation on land before I ever considered the cruise industry. My motivation starts with the children, and the cruise environment is simply where I can do that work at the highest level.",
+    tip:"NCL and RCL both require 'passionate about working with children' as a listed requirement. Show it is genuine, not just a job."
+  },
+  { id:232, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"Describe your experience implementing recreational, theatrical and craft programs for youth aged 2 to 17.",
+    modelAnswer:"I have three years of experience designing and implementing recreational, theatrical and craft programs for mixed age groups from 2 to 17 years old. I adapt each program's complexity and energy level to the specific age group — using sensory play and short attention span activities for toddlers, competitive sports and team challenges for older children, and theatrical drama workshops and creative projects for teenagers.",
+    keywords:["designing","implementing","recreational","theatrical","craft","mixed age groups","2 to 17","adapt","sensory play","theatrical drama","teenagers"],
+    followUp:"How do you manage a program when you have a very wide age range in the same session?",
+    followUpAnswer:"I design layered activities where each age finds their appropriate level of challenge and contribution. A treasure hunt for example can have simple tasks for younger children and more complex puzzles for teenagers while everyone participates in the same event.",
+    tip:"Norwegian's job description requires 'minimum two years experience implementing youth recreation, sports and childhood education for ages 2-17.' Match this language exactly."
+  },
+  { id:233, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"How do you ensure the safety of children during youth program activities?",
+    modelAnswer:"Safety is always the absolute first priority above entertainment value. I conduct a thorough safety check of all activity areas before each session, maintain strict headcounts throughout every activity, establish and enforce clear behavioral boundaries from the start, and always know the location of every child in my care. I follow the ship's child safeguarding policies precisely and report any safety concern immediately to my supervisor.",
+    keywords:["safety first","headcounts","safety check","behavioral boundaries","child safeguarding","policies","report","supervisor","every child","location"],
+    followUp:"What do you do if a child goes missing during a supervised activity?",
+    followUpAnswer:"I immediately alert my supervisor and follow the ship's missing child protocol without delay. I never attempt to handle a missing child situation independently. Speed and proper escalation are critical.",
+    tip:"Child safeguarding is legally critical on cruise ships. Show you know protocols exist and your role is to follow them precisely, not improvise."
+  },
+  { id:234, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"How do you communicate with parents about their children's experience in the youth program?",
+    modelAnswer:"I communicate with parents proactively, warmly and professionally. At drop-off I note any specific needs or concerns they mention and confirm pickup procedures clearly. I provide brief positive updates when parents are nearby and I document and report anything unusual immediately. I understand that parents are entrusting their most precious responsibility to me and I take that trust with the utmost seriousness.",
+    keywords:["proactively","specific needs","pickup procedures","positive updates","document","report","trust","parents","precious","utmost seriousness"],
+    followUp:"How do you handle a parent who disagrees with how you managed a situation with their child?",
+    followUpAnswer:"I listen respectfully to their concern without becoming defensive, explain my reasoning calmly, involve my supervisor if the parent remains unsatisfied, and follow up to ensure the relationship with the family is repaired.",
+    tip:"Parental communication is listed as a specific NCL requirement. Emphasize trust, transparency and professional documentation."
+  },
+  { id:235, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"Are you comfortable hosting youth activities using a microphone and performing in front of large groups of children?",
+    modelAnswer:"Absolutely. I am very comfortable using a microphone and performing as a host in front of large groups of children and families. I understand that effective youth hosting requires a completely different energy and communication style than adult entertainment — more physical, more visual, more repetitive in instruction, and delivered with genuine enthusiasm that children can feel is authentic rather than performed.",
+    keywords:["microphone","hosting","large groups","physical","visual","repetitive","genuine enthusiasm","authentic","children and families","energy"],
+    followUp:"How do you maintain consistent energy hosting a children's activity at the end of a long working day?",
+    followUpAnswer:"I remind myself that for these children this activity is the highlight of their day regardless of how I feel. That reframing always restores my energy because I genuinely care about the experience they have.",
+    tip:"NCL job description states youth counselors 'must be comfortable speaking on a microphone and be an effective host/hostess with large groups.' Use this exact language."
+  },
+  { id:236, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"Do you have experience with theatrical and drama activities for children?",
+    modelAnswer:"Yes. I have one year of dedicated experience running theatrical and drama activities for children aged 5 to 17. I have facilitated improv theater workshops, directed mini-productions, run drama games and story-building exercises, and organized end-of-cruise talent shows. Drama activities are particularly powerful for building confidence and self-expression in children who may be shy in other settings.",
+    keywords:["theatrical","drama activities","improv theater","mini-productions","drama games","story-building","talent shows","confidence","self-expression","shy"],
+    followUp:"Why is theatrical programming specifically valuable for children on a cruise?",
+    followUpAnswer:"Cruises give children a unique opportunity to step outside their everyday identity and try something new in a safe environment. Theatrical activities accelerate that openness and often result in some of the most memorable moments of the entire family vacation.",
+    tip:"Norwegian specifically requires 'minimum one year experience in theatrical/drama related activities.' This is non-negotiable for NCL — mention it explicitly."
+  },
+  { id:237, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"How do you handle a child who is consistently disruptive or aggressive toward other children?",
+    modelAnswer:"I address the behavior calmly and privately, using age-appropriate language to explain the impact on others. I use positive redirection — finding a constructive role for their energy — before any punitive approach. I document the behavior and notify my Youth Program Manager. I also communicate factually with the parents at pickup without dramatizing the situation, and together we agree on a strategy for the next session.",
+    keywords:["calmly","privately","age-appropriate","positive redirection","document","Youth Program Manager","parents","factually","strategy","constructive role"],
+    followUp:"When would you ask a child to be removed from the program?",
+    followUpAnswer:"Only when their behavior poses a genuine safety risk to other children and all de-escalation strategies have been exhausted. That decision is always made with my supervisor, never unilaterally.",
+    tip:"Show a clear escalation ladder: redirect → document → parent communication → supervisor → removal. Never start at removal."
+  },
+  { id:238, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"Do you have experience with children with special needs?",
+    modelAnswer:"Yes, I have experience supporting children with a range of special needs including autism spectrum, ADHD and sensory processing differences. I adapt my programming to be more predictable and structure-oriented for children who need that, use visual schedules when helpful, and communicate closely with parents to understand each child's specific triggers and strengths. I believe every child deserves full participation in the program regardless of their needs.",
+    keywords:["special needs","autism spectrum","ADHD","sensory processing","predictable","structure","visual schedules","triggers","strengths","full participation"],
+    followUp:"How do you prepare your team to support a child with special needs in a group setting?",
+    followUpAnswer:"I brief my team members before the session on the child's specific needs, assign a primary support contact, and ensure the physical environment is adapted — quieter corner available, sensory stimulation minimized if needed.",
+    tip:"NCL states 'one year experience with special needs programming strongly preferred.' Having this experience is a major competitive advantage."
+  },
+  { id:239, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"How do you manage inventory, equipment and supplies for the youth program?",
+    modelAnswer:"I maintain organized inventory systems for all youth program equipment, supplies, gifts and prizes. I conduct regular stock checks, submit replenishment requests before running low, and store all items safely and in a way that prevents damage. I understand that well-maintained supplies directly impact the quality of the programs I can deliver.",
+    keywords:["inventory","organized","equipment","supplies","prizes","stock checks","replenishment","stored safely","program quality"],
+    followUp:"What happens when you run out of a key supply mid-program?",
+    followUpAnswer:"I improvise creatively with what I have rather than canceling or disappointing children, and I submit an urgent replenishment request immediately after the session.",
+    tip:"NCL specifically lists 'maintenance of storage, inventory and ordering of equipment and supplies' as a Youth Counselor duty. Show you know this is part of the role."
+  },
+  { id:240, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"How do you balance safety enforcement with creating a fun environment for children?",
+    modelAnswer:"Safety rules delivered with fun and creativity are followed far more consistently than rules delivered with seriousness and warnings. I introduce every safety rule through a game or story that makes children want to follow it rather than comply with it reluctantly. Fun and safety are not opposites — the best youth programs I have run were both the safest and the most enjoyable because children felt respected and engaged simultaneously.",
+    keywords:["safety rules","fun","creatively","consistently","game","story","comply","respected","engaged","simultaneously"],
+    followUp:"Give me an example of a safety rule you made fun for children.",
+    followUpAnswer:"I turned the 'no running' rule into a slow-motion superhero walking challenge. Children competed to walk the slowest in the most dramatic superhero style. Zero running incidents, maximum engagement.",
+    tip:"This answer demonstrates professional-level child behavior management. Make it specific and memorable."
+  },
+  { id:241, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"How do you handle a child who becomes homesick or upset during a session?",
+    modelAnswer:"I separate myself and the child from the group calmly and give them full attention. I validate their feelings genuinely without dismissing them, offer a quiet activity or comfort item if available, and contact the parents if the distress continues. I never force a child to re-engage before they are ready, and I ensure the transition back to the group happens at their pace.",
+    keywords:["separate","full attention","validate feelings","quiet activity","contact parents","force","re-engage","their pace","distress","comfort"],
+    followUp:"How do you prevent homesickness from spreading to other children in the group?",
+    followUpAnswer:"By addressing it quickly and privately. Children who see distress managed calmly and kindly feel secure rather than anxious. The handling itself is the reassurance.",
+    tip:"Emotional intelligence with children is as valued as activity skills in youth staff roles. Show genuine empathy backed by practical approach."
+  },
+  { id:242, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"What does implementing a safe and sanitary youth program environment mean to you?",
+    modelAnswer:"It means following the ship's International Public Health cleaning and sanitation procedures for all work surfaces, equipment and activity materials without exception. I monitor my activity stations continuously for hygiene compliance, ensure proper handwashing protocols are maintained with children, and report any sanitation concern to my supervisor immediately. A clean program environment protects every child in my care.",
+    keywords:["International Public Health","sanitation procedures","work surfaces","equipment","hygiene compliance","handwashing","report","supervisor","protects"],
+    followUp:"How do you enforce hygiene standards with young children who resist?",
+    followUpAnswer:"I make handwashing a fun group ritual rather than an instruction — we do it together as a team before and after every activity with a song or count-down to make it engaging.",
+    tip:"Cruise lines follow strict USPH sanitation regulations. Youth staff who understand this show professional readiness."
+  },
+  { id:243, dept:"youth_staff", deptLabel:"Youth Staff",
+    question:"How do you ensure maximum participation in the youth program to meet enrollment targets?",
+    modelAnswer:"I work closely with the entertainment and guest services teams to promote the youth program through daily announcements, family-friendly visibility in public areas, and personal invitations during embarkation. I ensure every parent I meet understands the specific value and safety standards of the program. Word of mouth from satisfied families is the most powerful marketing tool and I generate it by delivering genuinely exceptional programming every single session.",
+    keywords:["enrollment","promote","announcements","public areas","embarkation","value","safety standards","word of mouth","exceptional programming","families"],
+    followUp:"What do you do if participation drops mid-cruise?",
+    followUpAnswer:"I proactively change the programming to include activities that generate visible excitement — I make the fun visible from outside the venue so passing guests can see children having a great time and want to join.",
+    tip:"NCL lists 'ensure marketing efforts reach guests to maximize participation' as a financial responsibility of Youth Counselors."
+  },
+
+  /* ===== DECK STEWARD / POOL ATTENDANT (25) ===== */
+  /* Keywords from RCL, Carnival, SAGA, BSM job postings:
+     pool area cleanliness, deck furniture, towel service, guest satisfaction,
+     USPH standards, STCW, sanitation, safety compliance, guest service,
+     pool deck maintenance, professional appearance, international team */
+
+  { id:261, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"Why do you want to work as a Deck Steward on a cruise ship?",
+    modelAnswer:"I want to contribute to guest satisfaction by maintaining the highest standards of cleanliness and service in the most visible and enjoyable areas of the ship. The pool deck is where guests spend the majority of their leisure time and I take pride in ensuring that environment is consistently clean, welcoming and perfectly organized so that every guest has an exceptional experience every time they step outside.",
+    keywords:["guest satisfaction","highest standards","cleanliness","pool deck","leisure time","consistently","welcoming","organized","exceptional experience"],
+    followUp:"Are you aware of the physical demands of the Deck Steward role?",
+    followUpAnswer:"Yes, I understand the role involves extended periods of physical activity including lifting up to 25 kilograms, constant movement across deck areas, working in various weather conditions, and maintaining high energy standards throughout a full shift. I am physically fit and fully prepared for these demands.",
+    tip:"Deck Steward is a physically demanding role. Proactively demonstrating physical readiness shows you have researched the job properly."
+  },
+  { id:262, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How do you maintain cleanliness and organization of pool deck areas and outdoor lounges?",
+    modelAnswer:"I follow a systematic cleaning sequence that ensures no area is overlooked. I start with collecting used glasses, china and cutlery from the pool area, clean and straighten all deck chairs, maintain the towel supply station, empty waste receptacles regularly, polish brass and metals in the pool area, and conduct a final visual inspection of the entire deck before ending my section. I maintain this standard continuously throughout the shift, not just at the beginning.",
+    keywords:["systematic","pool area","deck chairs","towel supply","waste receptacles","polish","visual inspection","continuously","organized","standard"],
+    followUp:"How do you prioritize tasks when the pool deck is extremely busy with guests?",
+    followUpAnswer:"I focus first on safety — removing any hazards immediately. Then I address the most visible cleanliness issues, keep the towel supply topped up since that is what guests interact with most, and work systematically through the remaining tasks without disrupting guests.",
+    tip:"The job description from crew-center.com lists specific duties in order. Show you understand the priority hierarchy: safety first, then service, then aesthetics."
+  },
+  { id:263, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How familiar are you with USPH standards and STCW requirements for this role?",
+    modelAnswer:"I am familiar with USPH — United States Public Health — standards for maintaining sanitary conditions in pool and deck areas including proper chemical handling, surface sanitization procedures and waste disposal protocols. I understand that STCW Basic Safety Training certification is a requirement for shipboard employment and I hold or am prepared to obtain the required STCW certificates before joining. Compliance with these standards is non-negotiable and I take them seriously as part of my professional responsibility.",
+    keywords:["USPH","United States Public Health","STCW","Basic Safety Training","sanitary","chemical handling","sanitization","waste disposal","compliance","non-negotiable"],
+    followUp:"What would you do if you observed a colleague not following USPH sanitation procedures?",
+    followUpAnswer:"I would address it discreetly with them directly if it is a minor lapse, or report it to my supervisor immediately if it involves a genuine health or safety risk to guests or crew.",
+    tip:"STCW and USPH compliance are mandatory requirements in every Deck Steward job posting. Knowing these acronyms and what they mean is a basic competency signal."
+  },
+  { id:264, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How do you handle towel service in the pool area professionally and efficiently?",
+    modelAnswer:"I maintain a consistent and fully stocked towel supply station at all times. I monitor towel usage throughout my shift, collect soiled towels regularly and transport them to the laundry efficiently, and ensure that clean replacements are always available before the supply runs low. I also respond warmly to individual guest towel requests as an opportunity for positive guest interaction rather than just a logistical task.",
+    keywords:["towel supply","fully stocked","monitor","soiled towels","laundry","clean replacements","supply runs low","guest interaction","positive","efficiently"],
+    followUp:"How do you manage the towel station during peak pool hours when demand is very high?",
+    followUpAnswer:"I increase my replenishment frequency during peak hours, coordinate with the laundry team for priority turnaround, and position clean stock where it is most accessible to guests to reduce wait time.",
+    tip:"Towel service management is a core Deck Steward responsibility. Show you understand the logistics, not just the physical task."
+  },
+  { id:265, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How do you respond to guest questions and requests while working on the pool deck?",
+    modelAnswer:"I consider every guest interaction on the pool deck as an opportunity to enhance their vacation experience. I respond to all questions warmly and accurately — whether about the ship's schedule, port of call information, onboard services or activity times. If I do not know the answer I find out immediately rather than guessing. I combine excellent guest service with my cleaning responsibilities seamlessly so that guests see a professional crew member, not just a cleaner.",
+    keywords:["guest interaction","warmly","accurately","schedule","port of call","onboard services","find out","professional","vacation experience","seamlessly"],
+    followUp:"What would you do if a guest asks you a question about the ship that you don't know the answer to?",
+    followUpAnswer:"I tell them honestly that I want to give them the most accurate information and I immediately find a colleague or check the daily program to give them the correct answer. Guests appreciate honesty over confident wrong information.",
+    tip:"The deck steward job description specifically states 'respond correctly to guest questions regarding ship's schedule, itinerary, ports of call and onboard services.' Show you understand this is part of your role."
+  },
+  { id:266, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How do you set up and arrange deck furniture and equipment according to ship standards?",
+    modelAnswer:"I follow the deck furniture layout diagram and the ship's standard configuration precisely for each area. I ensure all deck chairs are properly aligned, cleaned and adjusted consistently, that safety equipment is visible and unobstructed, and that the overall presentation of the deck reflects the luxurious standard expected by guests. I store deck furniture correctly when required due to weather or safety conditions.",
+    keywords:["layout diagram","standard configuration","aligned","cleaned","adjusted","safety equipment","visible","unobstructed","luxurious standard","store furniture","weather"],
+    followUp:"What do you do when weather conditions require rapid furniture removal from the deck?",
+    followUpAnswer:"I respond immediately and efficiently following the supervisor's instructions, prioritize safety over speed but work as quickly as possible, and ensure all furniture is secured in designated storage areas to prevent damage or hazard.",
+    tip:"Rapid furniture removal during bad weather is a genuine operational responsibility for Deck Stewards. Mentioning weather preparedness shows professional awareness."
+  },
+  { id:267, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How do you maintain guest safety and compliance with ship policies on the pool deck?",
+    modelAnswer:"I monitor the pool deck continuously for any safety concerns — wet surfaces, overcrowding around pools, unauthorized areas, guests in distress, or policy violations such as glass containers near the pool. I address minor policy violations politely and firmly, report safety hazards to my supervisor immediately, and understand that my constant presence on the deck is itself a safety deterrent and service asset.",
+    keywords:["monitor continuously","safety concerns","wet surfaces","overcrowding","policy violations","glass containers","politely","report","supervisor","constant presence"],
+    followUp:"How do you handle a guest who refuses to comply with a pool area safety rule?",
+    followUpAnswer:"I explain the rule politely and the reason behind it once more. If they continue to refuse I involve my supervisor rather than escalating a verbal confrontation. Guest safety and crew safety both require involving the right authority.",
+    tip:"Pool deck safety monitoring is listed in virtually every Deck Steward job description. Knowing specific hazards like glass containers shows job knowledge."
+  },
+  { id:268, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How do you work effectively as part of an international team?",
+    modelAnswer:"I genuinely enjoy working with colleagues from different nationalities and backgrounds. I communicate clearly and respectfully regardless of language differences, adapt my communication style to ensure instructions are understood, contribute positively to team morale, and approach cultural differences with curiosity and openness. International teams function best when every member feels respected and valued regardless of origin.",
+    keywords:["international team","nationalities","clearly","respectfully","language differences","team morale","cultural differences","curiosity","openness","valued"],
+    followUp:"Describe a time you successfully worked with someone from a very different cultural background.",
+    followUpAnswer:"At a previous resort I worked closely with a colleague whose first language was Tagalog. We developed simple visual communication systems for coordinating our sections during busy periods and built a very effective working partnership.",
+    tip:"Every Deck Steward job description mentions 'work with international team members.' Show genuine cross-cultural experience and adaptability."
+  },
+  { id:269, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"How do you report and follow up on maintenance issues you observe on deck?",
+    modelAnswer:"I report every maintenance issue I observe — broken deck furniture, lighting faults, safety equipment damage, heating or ventilation problems — immediately to my supervisor using the ship's maintenance request system. I document the specific location, nature of the issue and the time I reported it. I follow up to verify the repair was completed and I never attempt unauthorized repairs regardless of how minor the issue appears.",
+    keywords:["report immediately","maintenance request","document","location","time","follow up","unauthorized repairs","supervisor","safety equipment","broken furniture"],
+    followUp:"Why is it important to document maintenance reports rather than just verbally telling a supervisor?",
+    followUpAnswer:"Documentation creates an accountable record that protects the guest, the crew and the company. Verbal reports can be forgotten or misunderstood. Written records ensure follow-through and create legal protection if a guest is injured due to a known hazard.",
+    tip:"Deck Stewards are often the first to observe maintenance issues. Showing you understand the importance of documentation shows operational maturity."
+  },
+  { id:270, dept:"deck_steward", deptLabel:"Deck Steward",
+    question:"What does maintaining a professional appearance mean to you as a Deck Steward?",
+    modelAnswer:"Maintaining professional appearance as a Deck Steward means meeting the ship's uniform and grooming standards precisely at all times while in public areas — regardless of how physically demanding the shift has been. I understand that guests associate my appearance with the overall quality and standards of the ship, and that the Deck Steward is highly visible to guests throughout the day. Taking pride in my appearance is part of taking pride in my role.",
+    keywords:["uniform","grooming standards","public areas","regardless","physically demanding","associate","quality","highly visible","pride","role"],
+    followUp:"How do you maintain grooming standards during a physically demanding outdoor shift in hot weather?",
+    followUpAnswer:"I plan ahead — keeping essentials to freshen up accessible during breaks, staying hydrated, and ensuring my uniform remains presentable throughout the shift even with physical activity.",
+    tip:"Professional appearance standards are listed in all major cruise line Deck Steward postings. This answer shows attention to brand representation."
+  }
+
+];
